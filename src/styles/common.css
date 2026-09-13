@@ -1,0 +1,624 @@
+/* ==========================================================================
+   HRM Common Design System Styles
+   Seamless integration with Ant Design's defaultAlgorithm & darkAlgorithm
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Buttons (Cursor Orange Primary & Hairline Secondary)
+   -------------------------------------------------------------------------- */
+.btn-cursor-primary {
+  background-color: #f54e00 !important;
+  border-color: #f54e00 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  height: 40px !important;
+  padding: 0 18px !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.btn-cursor-primary:hover {
+  background-color: #d04200 !important;
+  border-color: #d04200 !important;
+}
+
+.btn-hairline-secondary {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-icon-hairline {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar Components
+   -------------------------------------------------------------------------- */
+.hrm-sidebar {
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  z-index: 20 !important;
+  box-shadow: none !important;
+}
+
+.hrm-sidebar-brand {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hrm-sidebar-brand.expanded {
+  padding: 0 20px;
+}
+
+.hrm-sidebar-brand.collapsed {
+  padding: 0 18px;
+}
+
+.hrm-logo-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-color: #f54e00;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(245, 78, 0, 0.35);
+}
+
+.hrm-brand-title {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.hrm-brand-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #807d72;
+  font-weight: 600;
+}
+
+.hrm-sidebar-menu-wrap {
+  padding: 10px 8px;
+}
+
+.hrm-sidebar-menu {
+  background: transparent !important;
+  border-right: 0 !important;
+  font-weight: 400 !important;
+  font-size: 13.5px !important;
+}
+
+.hrm-sidebar-menu .ant-menu-title-content {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   Header Components
+   -------------------------------------------------------------------------- */
+.hrm-header {
+  padding: 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 60px !important;
+  transition: background-color 0.25s ease, border-color 0.25s ease !important;
+}
+
+.theme-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+}
+
+.header-divider-line {
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  transition: background-color 0.25s ease;
+}
+
+.hrm-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 10px 4px 6px;
+  border-radius: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.hrm-content-container {
+  padding: 20px 24px 32px !important;
+  min-height: calc(100vh - 60px);
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* --------------------------------------------------------------------------
+   Pills & Badges
+   -------------------------------------------------------------------------- */
+.code-pill {
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Hairline Elevation & Card Outlines (Strict compliance with DESIGN.md)
+   No drop shadows anywhere. Clean 1px hairlines on warm cream canvas.
+   -------------------------------------------------------------------------- */
+.ant-card,
+.common-filter-bar,
+.common-table-card,
+.stat-card {
+  box-shadow: none !important;
+  border: 1px solid #e6e5e0 !important;
+  border-radius: 12px !important;
+}
+
+[data-theme='dark'] .ant-card,
+[data-theme='dark'] .common-filter-bar,
+[data-theme='dark'] .common-table-card,
+[data-theme='dark'] .stat-card {
+  border: 1px solid #2d2d2d !important;
+}
+
+.common-table-card .ant-table-cell {
+  vertical-align: middle !important;
+}
+
+.common-table-card .ant-table-thead > tr > th {
+  white-space: nowrap !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  color: #26251e !important;
+  background-color: #fafaf7 !important;
+  border-bottom: 1px solid #e6e5e0 !important;
+}
+
+[data-theme='dark'] .common-table-card .ant-table-thead > tr > th {
+  color: #e5e7eb !important;
+  background-color: #1a1a1a !important;
+  border-bottom: 1px solid #2d2d2d !important;
+}
+
+.common-table-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #efeee8 !important; /* hairline-soft from DESIGN.md */
+}
+
+[data-theme='dark'] .common-table-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #262626 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Excel-style Freeze Panes (STT pinned left, Thao tác pinned right)
+   -------------------------------------------------------------------------- */
+.common-table-card .ant-table-cell-fix-left,
+.common-table-card .ant-table-cell-fix-left-last {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 2 !important;
+  background-color: #ffffff !important;
+}
+
+.common-table-card .ant-table-cell-fix-right,
+.common-table-card .ant-table-cell-fix-right-first {
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 2 !important;
+  background-color: #ffffff !important;
+}
+
+/* Header fixed cells - match header background seamlessly without vertical bar */
+.common-table-card .ant-table-thead th.ant-table-cell-fix-left,
+.common-table-card .ant-table-thead th.ant-table-cell-fix-left-last,
+.common-table-card .ant-table-thead th.ant-table-cell-fix-right,
+.common-table-card .ant-table-thead th.ant-table-cell-fix-right-first {
+  z-index: 4 !important;
+  background-color: #fafaf7 !important;
+}
+
+/* Dark mode backgrounds for fixed cells */
+[data-theme='dark'] .common-table-card .ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-cell-fix-left-last,
+[data-theme='dark'] .common-table-card .ant-table-cell-fix-right,
+[data-theme='dark'] .common-table-card .ant-table-cell-fix-right-first {
+  background-color: #1e1e1e !important;
+}
+
+[data-theme='dark'] .common-table-card .ant-table-thead th.ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-thead th.ant-table-cell-fix-left-last,
+[data-theme='dark'] .common-table-card .ant-table-thead th.ant-table-cell-fix-right,
+[data-theme='dark'] .common-table-card .ant-table-thead th.ant-table-cell-fix-right-first {
+  background-color: #1a1a1a !important;
+}
+
+/* Row Hover state: fixed cells match hover background seamlessly */
+.common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+.common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-left,
+.common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-right {
+  background-color: #fafaf7 !important;
+}
+
+[data-theme='dark'] .common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+[data-theme='dark'] .common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-right {
+  background-color: #222222 !important;
+}
+
+/* Subtle edge indicators only active when table is actively scrolled horizontally */
+.common-table-card .ant-table-ping-left .ant-table-cell-fix-left-last::after {
+  box-shadow: inset 4px 0 6px -3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.common-table-card .ant-table-ping-right .ant-table-cell-fix-right-first::after {
+  box-shadow: inset -4px 0 6px -3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.status-badge-custom {
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-active {
+  color: #1f8a65;
+  background-color: rgba(31, 138, 101, 0.12);
+  border: 1px solid rgba(31, 138, 101, 0.25);
+}
+
+.status-probation {
+  color: #c08532;
+  background-color: rgba(192, 133, 50, 0.12);
+  border: 1px solid rgba(192, 133, 50, 0.25);
+}
+
+.status-on-leave {
+  color: #2563eb;
+  background-color: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.status-resigned {
+  color: #807d72;
+  background-color: rgba(140, 140, 140, 0.12);
+  border: 1px solid rgba(140, 140, 140, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Employee Feature Typography & Modal
+   -------------------------------------------------------------------------- */
+.employee-avatar {
+  flex-shrink: 0;
+}
+
+.employee-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.employee-department {
+  font-weight: 500;
+  font-size: 13.5px;
+}
+
+.employee-position {
+  font-size: 12px;
+}
+
+.employee-phone {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.employee-salary {
+  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+
+.employee-date {
+  font-size: 13px;
+}
+
+.modal-form-item-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modal-form-required {
+  color: #f54e00;
+  margin-left: 2px;
+}
+
+.modal-form-error {
+  font-size: 12px;
+  color: #cf2d56;
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   FilterBar Component Equal Sizing & Alignment
+   -------------------------------------------------------------------------- */
+.common-filter-bar .ant-input-affix-wrapper {
+  height: 40px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0 11px !important;
+  box-sizing: border-box !important;
+}
+
+.common-filter-bar .ant-input-affix-wrapper > input.ant-input,
+.common-filter-bar .ant-input-affix-wrapper input.ant-input,
+.ant-input-affix-wrapper input.ant-input {
+  height: auto !important;
+  min-height: auto !important;
+  line-height: normal !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.common-filter-bar .ant-input-affix-wrapper input.ant-input:focus,
+.common-filter-bar .ant-input-affix-wrapper input.ant-input:focus-visible,
+.common-filter-bar .ant-input-affix-wrapper input.ant-input:hover,
+.ant-input-affix-wrapper input.ant-input:focus,
+.ant-input-affix-wrapper input.ant-input:focus-visible {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.common-filter-bar .ant-input-prefix {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-inline-end: 8px !important;
+  align-self: center !important;
+}
+
+.common-filter-bar .ant-input-affix-wrapper,
+.common-filter-bar input.ant-input:not(.ant-input-affix-wrapper input),
+.common-filter-bar .ant-select-selector,
+.common-filter-bar .ant-picker {
+  border: 1px solid #e6e5e0 !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+}
+
+[data-theme='dark'] .common-filter-bar .ant-input-affix-wrapper,
+[data-theme='dark'] .common-filter-bar input.ant-input:not(.ant-input-affix-wrapper input),
+[data-theme='dark'] .common-filter-bar .ant-select-selector,
+[data-theme='dark'] .common-filter-bar .ant-picker {
+  border: 1px solid #2d2d2d !important;
+}
+
+/* Hover: Hairline strong (#cfcdc4 from DESIGN.md line 33) */
+.common-filter-bar .ant-input-affix-wrapper:hover,
+.common-filter-bar input.ant-input:not(.ant-input-affix-wrapper input):hover,
+.common-filter-bar .ant-select:hover .ant-select-selector,
+.common-filter-bar .ant-picker:hover {
+  border-color: #cfcdc4 !important;
+}
+
+[data-theme='dark'] .common-filter-bar .ant-input-affix-wrapper:hover,
+[data-theme='dark'] .common-filter-bar input.ant-input:not(.ant-input-affix-wrapper input):hover,
+[data-theme='dark'] .common-filter-bar .ant-select:hover .ant-select-selector,
+[data-theme='dark'] .common-filter-bar .ant-picker:hover {
+  border-color: #3d3d3d !important;
+}
+
+/* Focus: Crisp 1px outline with Cursor Orange on wrapper or standalone input, ZERO blurry drop shadows */
+.common-filter-bar .ant-input-affix-wrapper-focused,
+.common-filter-bar input.ant-input:not(.ant-input-affix-wrapper input):focus,
+.common-filter-bar .ant-select-focused .ant-select-selector,
+.common-filter-bar .ant-picker-focused {
+  border-color: #f54e00 !important;
+  box-shadow: 0 0 0 1px #f54e00 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Drawer (DynamicViewSidebar & DynamicFormSidebar) Hairline Outline
+   -------------------------------------------------------------------------- */
+.ant-drawer-content {
+  box-shadow: none !important;
+}
+
+.ant-drawer-right .ant-drawer-content-wrapper {
+  box-shadow: -1px 0 0 0 #e6e5e0 !important;
+}
+
+[data-theme='dark'] .ant-drawer-right .ant-drawer-content-wrapper {
+  box-shadow: -1px 0 0 0 #2d2d2d !important;
+}
+
+.dynamic-view-sidebar .ant-drawer-header,
+.dynamic-form-sidebar .ant-drawer-header {
+  border-bottom: 1px solid #e6e5e0 !important;
+}
+
+.dynamic-view-sidebar .ant-drawer-footer,
+.dynamic-form-sidebar .ant-drawer-footer {
+  border-top: 1px solid #e6e5e0 !important;
+}
+
+[data-theme='dark'] .dynamic-view-sidebar .ant-drawer-header,
+[data-theme='dark'] .dynamic-form-sidebar .ant-drawer-header {
+  border-bottom: 1px solid #2d2d2d !important;
+}
+
+[data-theme='dark'] .dynamic-view-sidebar .ant-drawer-footer,
+[data-theme='dark'] .dynamic-form-sidebar .ant-drawer-footer {
+  border-top: 1px solid #2d2d2d !important;
+}
+
+/* --------------------------------------------------------------------------
+   CommonTable Action Button (Prominent, Elegant & Strictly Circular)
+   Guaranteed 1:1 aspect ratio, 50% border radius, zero distortion/oval shape
+   -------------------------------------------------------------------------- */
+.common-table-action-btn,
+.ant-btn.common-table-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  border: 1px solid #e6e5e0 !important;
+  background-color: #ffffff !important;
+  color: #5a5852 !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+}
+
+.common-table-action-btn .ant-btn-icon,
+.common-table-action-btn .anticon {
+  font-size: 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  color: inherit !important;
+  transition: color 0.18s ease, transform 0.18s ease !important;
+}
+
+.common-table-action-btn:hover,
+.common-table-action-btn:focus,
+.ant-dropdown-open.common-table-action-btn {
+  border-color: #f54e00 !important;
+  background-color: rgba(245, 78, 0, 0.08) !important;
+  color: #f54e00 !important;
+}
+
+.common-table-action-btn:hover .anticon,
+.ant-dropdown-open.common-table-action-btn .anticon {
+  color: #f54e00 !important;
+  transform: scale(1.08);
+}
+
+/* Dark mode action button */
+[data-theme='dark'] .common-table-action-btn,
+[data-theme='dark'] .ant-btn.common-table-action-btn {
+  border: 1px solid #333333 !important;
+  background-color: #1f1f1f !important;
+  color: #a3a199 !important;
+}
+
+[data-theme='dark'] .common-table-action-btn:hover,
+[data-theme='dark'] .common-table-action-btn:focus,
+[data-theme='dark'] .ant-dropdown-open.common-table-action-btn {
+  border-color: #f54e00 !important;
+  background-color: rgba(245, 78, 0, 0.18) !important;
+  color: #f54e00 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Action Dropdown Menu Styling (Editorial Hairline, Crisp Layout & Icons)
+   -------------------------------------------------------------------------- */
+.ant-dropdown .ant-dropdown-menu {
+  border: 1px solid #e6e5e0 !important;
+  border-radius: 10px !important;
+  padding: 6px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  background-color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-dropdown .ant-dropdown-menu {
+  border: 1px solid #2d2d2d !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  background-color: #1a1a1a !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item {
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 450 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.15s ease !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item:hover {
+  background-color: #f7f7f4 !important;
+}
+
+[data-theme='dark'] .ant-dropdown .ant-dropdown-menu-item:hover {
+  background-color: #262626 !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item-danger {
+  color: #cf2d56 !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item-danger:hover {
+  background-color: rgba(207, 45, 86, 0.08) !important;
+  color: #cf2d56 !important;
+}
+
