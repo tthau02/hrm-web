@@ -112,14 +112,71 @@
 .hrm-sidebar-menu {
   background: transparent !important;
   border-right: 0 !important;
-  font-weight: 400 !important;
+  font-weight: 450 !important;
   font-size: 13.5px !important;
 }
 
-.hrm-sidebar-menu .ant-menu-title-content {
-  overflow: visible !important;
-  text-overflow: clip !important;
+/* Eliminate Ant Design dark-blue / navy background on submenus */
+.hrm-sidebar-menu .ant-menu-sub,
+.hrm-sidebar-menu.ant-menu-dark .ant-menu-sub,
+.ant-menu-dark .hrm-sidebar-menu .ant-menu-sub,
+.ant-menu-dark.hrm-sidebar-menu .ant-menu-sub,
+.hrm-sidebar-menu .ant-menu-inline.ant-menu-sub,
+.hrm-sidebar-menu.ant-menu-inline.ant-menu-sub,
+.hrm-sidebar-menu.ant-menu-dark.ant-menu-inline .ant-menu-sub,
+.ant-menu-submenu-popup .ant-menu {
+  background: transparent !important;
+}
+
+/* Ensure generous breathing space between submenu title and arrow */
+.hrm-sidebar-menu .ant-menu-submenu-title {
+  padding-right: 44px !important;
+  padding-inline-end: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  position: relative !important;
+}
+
+.hrm-sidebar-menu .ant-menu-submenu-title .ant-menu-title-content {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  margin-right: 14px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
   white-space: nowrap !important;
+}
+
+.hrm-sidebar-menu .ant-menu-submenu-arrow {
+  right: 16px !important;
+  position: absolute !important;
+  color: #807d72 !important;
+  transition: transform 0.2s ease, color 0.15s ease !important;
+}
+
+.hrm-sidebar-menu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow {
+  color: #f54e00 !important;
+}
+
+/* Submenu items padding and smooth radius */
+.hrm-sidebar-menu .ant-menu-sub .ant-menu-item {
+  border-radius: 8px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+}
+
+/* Active item highlight */
+.hrm-sidebar-menu .ant-menu-item-selected {
+  background-color: #f54e00 !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.hrm-sidebar-menu .ant-menu-item-selected .ant-menu-item-icon,
+.hrm-sidebar-menu .ant-menu-item-selected .ant-menu-title-content,
+.hrm-sidebar-menu .ant-menu-item-selected a {
+  color: #ffffff !important;
 }
 
 
@@ -210,7 +267,7 @@
   vertical-align: middle !important;
 }
 
-.common-table-card .ant-table-thead > tr > th {
+.common-table-card .ant-table-thead>tr>th {
   white-space: nowrap !important;
   font-weight: 500 !important;
   font-size: 13px !important;
@@ -219,17 +276,18 @@
   border-bottom: 1px solid #e6e5e0 !important;
 }
 
-[data-theme='dark'] .common-table-card .ant-table-thead > tr > th {
+[data-theme='dark'] .common-table-card .ant-table-thead>tr>th {
   color: #e5e7eb !important;
   background-color: #1a1a1a !important;
   border-bottom: 1px solid #2d2d2d !important;
 }
 
-.common-table-card .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #efeee8 !important; /* hairline-soft from DESIGN.md */
+.common-table-card .ant-table-tbody>tr>td {
+  border-bottom: 1px solid #efeee8 !important;
+  /* hairline-soft from DESIGN.md */
 }
 
-[data-theme='dark'] .common-table-card .ant-table-tbody > tr > td {
+[data-theme='dark'] .common-table-card .ant-table-tbody>tr>td {
   border-bottom: 1px solid #262626 !important;
 }
 
@@ -277,17 +335,17 @@
 }
 
 /* Row Hover state: fixed cells match hover background seamlessly */
-.common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
-.common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
-.common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-left,
-.common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-right {
+.common-table-card .ant-table-tbody>tr:hover>td.ant-table-cell-fix-left,
+.common-table-card .ant-table-tbody>tr:hover>td.ant-table-cell-fix-right,
+.common-table-card .ant-table-tbody>tr.ant-table-row-hover>td.ant-table-cell-fix-left,
+.common-table-card .ant-table-tbody>tr.ant-table-row-hover>td.ant-table-cell-fix-right {
   background-color: #fafaf7 !important;
 }
 
-[data-theme='dark'] .common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
-[data-theme='dark'] .common-table-card .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
-[data-theme='dark'] .common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-left,
-[data-theme='dark'] .common-table-card .ant-table-tbody > tr.ant-table-row-hover > td.ant-table-cell-fix-right {
+[data-theme='dark'] .common-table-card .ant-table-tbody>tr:hover>td.ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-tbody>tr:hover>td.ant-table-cell-fix-right,
+[data-theme='dark'] .common-table-card .ant-table-tbody>tr.ant-table-row-hover>td.ant-table-cell-fix-left,
+[data-theme='dark'] .common-table-card .ant-table-tbody>tr.ant-table-row-hover>td.ant-table-cell-fix-right {
   background-color: #222222 !important;
 }
 
@@ -399,7 +457,7 @@
   box-sizing: border-box !important;
 }
 
-.common-filter-bar .ant-input-affix-wrapper > input.ant-input,
+.common-filter-bar .ant-input-affix-wrapper>input.ant-input,
 .common-filter-bar .ant-input-affix-wrapper input.ant-input,
 .ant-input-affix-wrapper input.ant-input {
   height: auto !important;
@@ -622,3 +680,233 @@
   color: #cf2d56 !important;
 }
 
+/* --------------------------------------------------------------------------
+   Notification Component Styling (DESIGN.md Hairline & Cursor Aesthetics)
+   -------------------------------------------------------------------------- */
+.ant-notification-notice {
+  border: 1px solid #e6e5e0 !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06) !important;
+  overflow: hidden !important;
+}
+
+[data-theme='dark'] .ant-notification-notice {
+  border: 1px solid #2d2d2d !important;
+  background-color: #1e1e1e !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.ant-notification-notice-progress {
+  height: 3px !important;
+}
+
+.ant-notification-notice-message {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #26251e !important;
+  margin-bottom: 4px !important;
+}
+
+[data-theme='dark'] .ant-notification-notice-message {
+  color: #f3f4f6 !important;
+}
+
+.ant-notification-notice-description {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: #5a5852 !important;
+}
+
+[data-theme='dark'] .ant-notification-notice-description {
+  color: #9ca3af !important;
+}
+
+.ant-notification-notice-close {
+  top: 14px !important;
+  right: 14px !important;
+  color: #807d72 !important;
+  transition: color 0.15s ease !important;
+}
+
+.ant-notification-notice-close:hover {
+  color: #26251e !important;
+}
+
+[data-theme='dark'] .ant-notification-notice-close:hover {
+  color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   InputNumber Uniform Styling (Matching Input, Select, DatePicker 40px)
+   -------------------------------------------------------------------------- */
+.ant-input-number {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e6e5e0 !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+[data-theme='dark'] .ant-input-number {
+  border: 1px solid #2d2d2d !important;
+  background-color: #1e1e1e !important;
+}
+
+.ant-input-number:hover {
+  border-color: #d04200 !important;
+}
+
+.ant-input-number-focused,
+.ant-input-number:focus,
+.ant-input-number:focus-within {
+  border-color: #f54e00 !important;
+  box-shadow: 0 0 0 2px rgba(245, 78, 0, 0.1) !important;
+}
+
+.ant-input-number .ant-input-number-input-wrap,
+.ant-input-number input.ant-input-number-input {
+  height: 38px !important;
+  line-height: 38px !important;
+  font-size: 14px !important;
+  color: #26251e !important;
+}
+
+[data-theme='dark'] .ant-input-number input.ant-input-number-input {
+  color: #e5e7eb !important;
+}
+
+.ant-input-number-affix-wrapper {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e6e5e0 !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  padding: 0 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-theme='dark'] .ant-input-number-affix-wrapper {
+  border: 1px solid #2d2d2d !important;
+  background-color: #1e1e1e !important;
+}
+
+.ant-input-number-affix-wrapper:hover {
+  border-color: #d04200 !important;
+}
+
+.ant-input-number-affix-wrapper-focused,
+.ant-input-number-affix-wrapper:focus-within {
+  border-color: #f54e00 !important;
+  box-shadow: 0 0 0 2px rgba(245, 78, 0, 0.1) !important;
+}
+
+.ant-input-number-affix-wrapper input.ant-input-number-input {
+  height: 38px !important;
+  line-height: 38px !important;
+}
+
+/* In case addonAfter / addonBefore is used anywhere */
+.ant-input-number-group-wrapper {
+  width: 100% !important;
+  display: inline-table !important;
+  vertical-align: middle !important;
+}
+
+.ant-input-number-group-wrapper .ant-input-number-wrapper {
+  height: 40px !important;
+}
+
+.ant-input-number-group-wrapper .ant-input-number {
+  height: 40px !important;
+  border-radius: 8px 0 0 8px !important;
+}
+
+.ant-input-number-group-addon {
+  height: 40px !important;
+  border: 1px solid #e6e5e0 !important;
+  border-left: none !important;
+  border-radius: 0 8px 8px 0 !important;
+  background-color: #f7f7f4 !important;
+  color: #5a5852 !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  padding: 0 12px !important;
+  vertical-align: middle !important;
+  line-height: 38px !important;
+}
+
+[data-theme='dark'] .ant-input-number-group-addon {
+  border: 1px solid #2d2d2d !important;
+  border-left: none !important;
+  background-color: #262626 !important;
+  color: #9ca3af !important;
+}
+
+/* --------------------------------------------------------------------------
+   Remove Browser Autofill Blue / Yellow Background
+   Overrides Chrome/Edge/Safari default autofill styling for all inputs & textareas
+   -------------------------------------------------------------------------- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #26251e !important;
+  caret-color: #26251e !important;
+  background-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+[data-theme='dark'] input:-webkit-autofill,
+[data-theme='dark'] input:-webkit-autofill:hover, 
+[data-theme='dark'] input:-webkit-autofill:focus, 
+[data-theme='dark'] input:-webkit-autofill:active,
+[data-theme='dark'] textarea:-webkit-autofill,
+[data-theme='dark'] textarea:-webkit-autofill:hover,
+[data-theme='dark'] textarea:-webkit-autofill:focus,
+[data-theme='dark'] textarea:-webkit-autofill:active,
+[data-theme='dark'] select:-webkit-autofill,
+[data-theme='dark'] select:-webkit-autofill:hover,
+[data-theme='dark'] select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+  caret-color: #e5e7eb !important;
+  background-color: transparent !important;
+}
+
+/* Inner input of Ant Design Affix Wrapper */
+.ant-input-affix-wrapper input.ant-input:-webkit-autofill,
+.ant-input-affix-wrapper input.ant-input:-webkit-autofill:hover,
+.ant-input-affix-wrapper input.ant-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  background-color: transparent !important;
+}
+
+[data-theme='dark'] .ant-input-affix-wrapper input.ant-input:-webkit-autofill,
+[data-theme='dark'] .ant-input-affix-wrapper input.ant-input:-webkit-autofill:hover,
+[data-theme='dark'] .ant-input-affix-wrapper input.ant-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  background-color: transparent !important;
+}

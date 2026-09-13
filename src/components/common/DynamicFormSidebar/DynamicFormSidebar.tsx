@@ -20,11 +20,13 @@ import {
 import {
   InboxOutlined,
   CloseOutlined,
-  SaveOutlined,
+  PlusOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { Rule } from 'antd/es/form';
 import type { DynamicFormSidebarProps, FormFieldConfig } from './types';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   config,
@@ -41,6 +43,14 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 }) => {
   const [form] = Form.useForm();
   const { token } = antdTheme.useToken();
+  const { isMobile, screenWidth } = useResponsive();
+
+  // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
+  const responsiveWidth = useMemo(() => {
+    if (isMobile) return '100%';
+    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 720), 10);
+    return Math.min(numericWidth, Math.round(screenWidth * 0.95));
+  }, [isMobile, width, screenWidth]);
 
   const isEdit = config.isEdit ?? (!!propData || !!config.data);
   const activeData = useMemo(() => propData ?? config.data ?? {}, [propData, config.data]);
@@ -95,6 +105,13 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       // Format date values back to ISO/string
       const processed: Record<string, any> = { ...values };
 
+      // Auto-trim all string inputs (both ends)
+      Object.keys(processed).forEach((key) => {
+        if (typeof processed[key] === 'string') {
+          processed[key] = processed[key].trim();
+        }
+      });
+
       allFields.forEach((fld) => {
         const val = processed[fld.key];
         if (val && dayjs.isDayjs(val)) {
@@ -120,8 +137,8 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
     // Required
     if (field.required) {
-      const msg = typeof field.required === 'string' ? field.required : `Vui lòng nhập ${field.label || field.key}`;
-      rules.push({ required: true, message: msg });
+      const fieldLabel = field.label || field.key;
+      rules.push({ required: true, whitespace: true, message: `${fieldLabel} bắt buộc nhập` });
     }
 
     // Type email
@@ -153,6 +170,14 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
     return rules;
   };
 
+  // Auto-trim helper for text inputs when losing focus (onBlur)
+  const handleInputBlur = (fieldKey: string) => (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const raw = e.target.value;
+    if (typeof raw === 'string' && raw !== raw.trim()) {
+      form.setFieldValue(fieldKey, raw.trim());
+    }
+  };
+
   // Render individual form control
   const renderControl = (field: FormFieldConfig) => {
     if (field.render) {
@@ -163,10 +188,26 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
     switch (field.type) {
       case 'password':
-        return <Input.Password placeholder={placeholder} size="middle" />;
+        return (
+          <Input.Password
+            placeholder={placeholder}
+            size="middle"
+            autoComplete="new-password"
+            onBlur={handleInputBlur(field.key)}
+          />
+        );
 
       case 'email':
-        return <Input type="email" placeholder={placeholder} allowClear size="middle" />;
+        return (
+          <Input
+            type="email"
+            placeholder={placeholder}
+            allowClear
+            size="middle"
+            autoComplete="off"
+            onBlur={handleInputBlur(field.key)}
+          />
+        );
 
       case 'number':
         return (
@@ -188,7 +229,14 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             placeholder={placeholder}
             formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
             parser={(value) => (value?.replace(/\./g, '') || '') as any}
-            addonAfter="₫"
+            suffix={
+              field.numberConfig?.addonAfter ? undefined : (
+                <span style={{ color: '#807d72', fontSize: 13, fontWeight: 500, paddingRight: 2 }}>
+                  ₫
+                </span>
+              )
+            }
+            addonAfter={field.numberConfig?.addonAfter}
             min={field.numberConfig?.min ?? 0}
             max={field.numberConfig?.max}
             style={{ width: '100%' }}
@@ -203,22 +251,34 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             rows={field.textareaConfig?.rows || 4}
             maxLength={field.textareaConfig?.maxLength || field.validation?.maxLength}
             showCount={field.textareaConfig?.showCount}
+            autoComplete="off"
+            onBlur={handleInputBlur(field.key)}
           />
         );
 
-      case 'select':
+      case 'select': {
+        const isSearch =
+          field.search !== undefined
+            ? field.search
+            : field.selectConfig?.search !== undefined
+              ? field.selectConfig.search
+              : field.selectConfig?.showSearch !== false;
         return (
           <Select
             placeholder={placeholder}
             options={field.options}
             allowClear={field.selectConfig?.allowClear !== false}
-            showSearch={field.selectConfig?.showSearch !== false}
-            filterOption={(input, opt) =>
-              (opt?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            showSearch={isSearch}
+            filterOption={
+              isSearch
+                ? (input, opt) =>
+                    (opt?.label as string)?.toLowerCase().includes(input.trim().toLowerCase())
+                : undefined
             }
             size="middle"
           />
         );
+      }
 
       case 'multiselect':
         return (
@@ -229,7 +289,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             allowClear
             showSearch
             filterOption={(input, opt) =>
-              (opt?.label as string)?.toLowerCase().includes(input.toLowerCase())
+              (opt?.label as string)?.toLowerCase().includes(input.trim().toLowerCase())
             }
             size="middle"
           />
@@ -296,7 +356,15 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
       case 'text':
       default:
-        return <Input placeholder={placeholder} allowClear size="middle" />;
+        return (
+          <Input
+            placeholder={placeholder}
+            allowClear
+            size="middle"
+            autoComplete="off"
+            onBlur={handleInputBlur(field.key)}
+          />
+        );
     }
   };
 
@@ -339,6 +407,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
               <Form.Item
                 name={field.key}
                 label={field.type !== 'checkbox' ? field.label : undefined}
+                required={Boolean(field.required)}
                 valuePropName={field.type === 'checkbox' || field.type === 'switch' || field.type === 'toggle' ? 'checked' : 'value'}
                 rules={rules}
                 extra={field.description}
@@ -382,6 +451,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   // Footer Actions
   const footerNode = (
     <div
+      className="drawer-footer-actions"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -393,6 +463,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       <Button
         onClick={onClose}
         disabled={saving}
+        icon={config.cancelIcon ?? <CloseOutlined style={{ fontSize: 13 }} />}
         style={{ minWidth: 110, height: 40, borderRadius: 8 }}
       >
         {config.cancelText || 'Hủy bỏ'}
@@ -402,7 +473,14 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
       <Button
         type="primary"
-        icon={<SaveOutlined />}
+        icon={
+          config.submitIcon ??
+          (isEdit ? (
+            <CheckOutlined style={{ fontSize: 14 }} />
+          ) : (
+            <PlusOutlined style={{ fontSize: 14 }} />
+          ))
+        }
         loading={saving}
         onClick={handleFormSubmit}
         className="btn-cursor-primary"
@@ -417,7 +495,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
     <Drawer
       open={open}
       onClose={onClose}
-      width={width}
+      width={responsiveWidth}
       placement={placement}
       title={headerNode}
       footer={footerNode}
@@ -442,8 +520,26 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       <Form
         form={form}
         layout="vertical"
-        requiredMark="optional"
+        requiredMark={(label, { required }) => (
+          <span>
+            {label}
+            {required && (
+              <span
+                style={{
+                  color: '#ff4d4f',
+                  marginLeft: 4,
+                  fontSize: 14,
+                  fontFamily: 'SimSun, sans-serif',
+                  lineHeight: 1,
+                }}
+              >
+                *
+              </span>
+            )}
+          </span>
+        )}
         scrollToFirstError
+        autoComplete="off"
       >
         {config.tabs && config.tabs.length > 0 ? (
           <Tabs

@@ -14,10 +14,12 @@ import { StatCard } from '@/components/common/StatCard';
 import { useDashboardStatsQuery, useEmployeesQuery } from '@/hooks/useHrmQuery';
 import { formatDate, getStatusConfig } from '@/utils/format';
 import type { Employee, EmployeeStatus } from '@/types';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { Text } = Typography;
 
 export const DashboardPage: React.FC = () => {
+  const { isMobile } = useResponsive();
   const { data: statsResponse, isLoading: isStatsLoading } = useDashboardStatsQuery();
   const { data: empResponse, isLoading: isEmpLoading } = useEmployeesQuery();
 
@@ -307,7 +309,7 @@ export const DashboardPage: React.FC = () => {
           >
             <ReactECharts
               option={hiringTrendOption}
-              style={{ height: 320, width: '100%' }}
+              style={{ height: isMobile ? 260 : 320, width: '100%' }}
               notMerge={true}
             />
           </Card>
@@ -321,7 +323,7 @@ export const DashboardPage: React.FC = () => {
           >
             <ReactECharts
               option={departmentPieOption}
-              style={{ height: 320, width: '100%' }}
+              style={{ height: isMobile ? 260 : 320, width: '100%' }}
               notMerge={true}
             />
           </Card>
@@ -337,7 +339,7 @@ export const DashboardPage: React.FC = () => {
           >
             <ReactECharts
               option={attendanceTrendOption}
-              style={{ height: 300, width: '100%' }}
+              style={{ height: isMobile ? 260 : 300, width: '100%' }}
               notMerge={true}
             />
           </Card>
@@ -356,6 +358,7 @@ export const DashboardPage: React.FC = () => {
               rowKey="id"
               pagination={false}
               loading={isEmpLoading}
+              scroll={{ x: 650 }}
             />
           </Card>
         </Col>

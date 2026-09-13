@@ -1,0 +1,241 @@
+/* ==========================================================================
+   HRM Web - Responsive Stylesheet (DESIGN.md Compliant)
+   Breakpoints:
+   - Mobile: < 640px / < 768px
+   - Tablet: 768px - 1023.98px
+   - Desktop: 1024px - 1279.98px
+   - Wide: >= 1280px
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Mobile Viewports (< 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Hide Desktop Fixed Sidebar on mobile (Mobile uses Drawer nav) */
+  .hrm-sidebar {
+    display: none !important;
+  }
+
+  /* Header adjustments for small screens */
+  .hrm-header {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+
+  .theme-toggle-pill {
+    padding: 2px 6px !important;
+    gap: 4px !important;
+  }
+
+  .header-divider-line {
+    margin: 0 2px !important;
+    height: 18px !important;
+  }
+
+  /* User chip: Hide long name & role on mobile, show Avatar only */
+  .hrm-user-chip {
+    padding: 2px !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .hrm-user-chip-text {
+    display: none !important;
+  }
+
+  /* Content area: optimize screen estate on mobile */
+  .hrm-content-container {
+    padding: 12px 10px 24px !important;
+    min-height: calc(100vh - 56px) !important;
+  }
+
+  /* Page Header stacking & full width actions */
+  .common-page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .common-page-header-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .common-page-header-actions {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .common-page-header-actions .ant-space {
+    width: 100% !important;
+  }
+
+  .common-page-header-actions .ant-space-item {
+    flex: 1 1 auto !important;
+  }
+
+  .common-page-header-actions .ant-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* FilterBar Mobile: full-width inputs & equal action buttons */
+  .common-filter-bar {
+    margin-bottom: 12px !important;
+  }
+
+  .common-filter-bar .ant-card-body {
+    padding: 12px !important;
+  }
+
+  .common-filter-bar-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .common-filter-bar-inputs {
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .filter-field-item {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .filter-field-item .ant-select,
+  .filter-field-item .ant-picker,
+  .filter-field-item .ant-input-affix-wrapper,
+  .filter-field-item input.ant-input {
+    width: 100% !important;
+  }
+
+  .common-filter-bar-actions {
+    width: 100% !important;
+  }
+
+  .common-filter-bar-actions .ant-space {
+    width: 100% !important;
+    display: flex !important;
+  }
+
+  .common-filter-bar-actions .ant-space-item {
+    flex: 1 1 50% !important;
+  }
+
+  .common-filter-bar-actions .ant-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* StatCard compact sizing */
+  .stat-card .ant-card-body {
+    padding: 14px 16px !important;
+  }
+
+  /* Drawer Mobile (DynamicViewSidebar & DynamicFormSidebar) */
+  .dynamic-view-sidebar .ant-drawer-content-wrapper,
+  .dynamic-form-sidebar .ant-drawer-content-wrapper {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  .dynamic-view-sidebar .ant-drawer-header,
+  .dynamic-form-sidebar .ant-drawer-header {
+    padding: 12px 14px !important;
+  }
+
+  .dynamic-view-sidebar .ant-drawer-body,
+  .dynamic-form-sidebar .ant-drawer-body {
+    padding: 12px 14px !important;
+  }
+
+  .dynamic-form-sidebar .ant-drawer-footer {
+    padding: 10px 14px !important;
+  }
+
+  /* Equal 50/50 split for drawer footer actions */
+  .drawer-footer-actions {
+    display: flex !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .drawer-footer-actions .ant-btn {
+    flex: 1 1 50% !important;
+    justify-content: center !important;
+  }
+
+  /* CommonTable Pagination on Mobile */
+  .common-table-card .ant-table-pagination.ant-pagination {
+    margin: 12px 0 !important;
+    padding: 0 10px 8px !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .common-table-card .ant-pagination-total-text {
+    width: 100% !important;
+    text-align: center !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet Viewports (768px to 1023.98px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .hrm-content-container {
+    padding: 16px 18px 28px !important;
+  }
+
+  /* FilterBar: 2-column grid on tablet */
+  .common-filter-bar-inputs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .filter-field-item {
+    flex: 1 1 calc(50% - 6px) !important;
+    min-width: calc(50% - 6px) !important;
+  }
+
+  /* Drawers cap at 90vw or 640px */
+  .dynamic-view-sidebar .ant-drawer-content-wrapper,
+  .dynamic-form-sidebar .ant-drawer-content-wrapper {
+    max-width: 90vw !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop and Above (>= 1024px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .mobile-drawer-trigger {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Utility Classes for Responsive Layouts
+   -------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .show-on-mobile {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .show-on-mobile {
+    display: none !important;
+  }
+}

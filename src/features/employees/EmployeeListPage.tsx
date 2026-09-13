@@ -3,21 +3,16 @@ import {
   UserAddOutlined,
   EditOutlined,
   DeleteOutlined,
-  FileExcelOutlined,
+  ExportOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
 import {
   PageHeader,
   FilterBar,
   CommonTable,
-  DynamicViewSidebar,
-  DynamicFormSidebar,
+  notify,
 } from '@/components/common';
-import type {
-  CommonTableColumn,
-  DynamicViewConfig,
-  DynamicFormConfig,
-} from '@/components/common';
+import type { CommonTableColumn } from '@/components/common';
 import {
   useEmployeesQuery,
   useDepartmentsQuery,
@@ -28,16 +23,19 @@ import {
 import { EMPLOYEE_STATUS_OPTIONS } from '@/types';
 import type { Employee, EmployeeStatus } from '@/types';
 
+// Subcomponents: View & Create/Update
+import { EmployeeView } from './EmployeeView';
+import { EmployeeCreateOrUpdate } from './EmployeeCreateOrUpdate';
+
 export const EmployeeListPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [departmentId, setDepartmentId] = useState<string>('all');
   const [status, setStatus] = useState<EmployeeStatus | 'all'>('all');
 
-  // Dynamic View Sidebar state
+  // Sidebar states
   const [viewSidebarOpen, setViewSidebarOpen] = useState(false);
   const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
 
-  // Dynamic Form Sidebar state
   const [formSidebarOpen, setFormSidebarOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
@@ -60,6 +58,7 @@ export const EmployeeListPage: React.FC = () => {
   const employees = empResponse?.data || [];
   const departments = useMemo(() => deptResponse?.data || [], [deptResponse?.data]);
 
+  // Modal / Sidebar Handlers
   const handleOpenAdd = () => {
     setEditingEmployee(null);
     setFormSidebarOpen(true);
@@ -87,7 +86,7 @@ export const EmployeeListPage: React.FC = () => {
         id: editingEmployee.id,
         data: payload,
       });
-      // Sync viewed employee if updated
+      // Sync currently viewed employee if updated
       if (viewingEmployee?.id === editingEmployee.id) {
         setViewingEmployee((prev) => (prev ? { ...prev, ...payload } : null));
       }
@@ -107,339 +106,82 @@ export const EmployeeListPage: React.FC = () => {
     [deleteMutation, viewingEmployee?.id]
   );
 
-  // 1. Dynamic View Sidebar Configuration
-  const viewConfig: DynamicViewConfig<Employee> = useMemo(() => ({
-    title: viewingEmployee ? viewingEmployee.fullName : 'Chi tiết nhân viên',
-    subtitle: viewingEmployee
-      ? `${viewingEmployee.code || 'NV'} • ${viewingEmployee.position || 'Nhân sự'}`
-      : undefined,
-    data: viewingEmployee,
-    tabs: [
-      {
-        key: 'profile',
-        label: 'Thông tin chung',
-        fields: [
-          {
-            key: 'avatar',
-            label: 'Ảnh đại diện',
-            type: 'avatar',
-            colSpan: 24,
-          },
-          {
-            key: 'title_work',
-            type: 'title',
-            titleConfig: { text: 'Thông tin công việc & Vị trí', divider: true },
-            colSpan: 24,
-          },
-          {
-            key: 'code',
-            label: 'Mã nhân viên',
-            type: 'badge',
-            colSpan: 12,
-          },
-          {
-            key: 'status',
-            label: 'Trạng thái nhân sự',
-            type: 'status',
-            colSpan: 12,
-          },
-          {
-            key: 'departmentName',
-            label: 'Phòng ban trực thuộc',
-            type: 'text',
-            colSpan: 12,
-          },
-          {
-            key: 'position',
-            label: 'Chức danh / Vị trí',
-            type: 'text',
-            colSpan: 12,
-          },
-          {
-            key: 'joinDate',
-            label: 'Ngày vào làm',
-            type: 'date',
-            colSpan: 12,
-          },
-          {
-            key: 'salary',
-            label: 'Mức lương cơ bản',
-            type: 'money',
-            colSpan: 12,
-          },
-          {
-            key: 'title_contact',
-            type: 'title',
-            titleConfig: { text: 'Thông tin liên hệ cá nhân', divider: true },
-            colSpan: 24,
-          },
-          {
-            key: 'email',
-            label: 'Email công ty',
-            type: 'email',
-            colSpan: 12,
-          },
-          {
-            key: 'phone',
-            label: 'Số điện thoại',
-            type: 'text',
-            colSpan: 12,
-          },
-          {
-            key: 'address',
-            label: 'Địa chỉ thường trú / tạm trú',
-            type: 'textarea',
-            placeholder: 'Chưa có thông tin địa chỉ',
-            colSpan: 24,
-          },
-        ],
-      },
-      {
-        key: 'compensation',
-        label: 'Hợp đồng & Đãi ngộ',
-        fields: [
-          {
-            key: 'title_compensation',
-            type: 'title',
-            titleConfig: { text: 'Chính sách lương & Phụ cấp', divider: true },
-            colSpan: 24,
-          },
-          {
-            key: 'salary',
-            label: 'Lương ký kết hợp đồng',
-            type: 'money',
-            colSpan: 12,
-          },
-          {
-            key: 'contractType',
-            label: 'Loại hợp đồng',
-            type: 'text',
-            colSpan: 12,
-            render: () => 'Hợp đồng lao động chính thức',
-          },
-          {
-            key: 'insuranceSalary',
-            label: 'Mức đóng BHXH',
-            type: 'money',
-            colSpan: 12,
-            render: (_v, d) => (d.salary ? Number(d.salary) * 0.8 : 5000000),
-          },
-          {
-            key: 'lunchAllowance',
-            label: 'Phụ cấp ăn trưa',
-            type: 'money',
-            colSpan: 12,
-            render: () => 730000,
-          },
-        ],
-      },
-    ],
-    actions: [
-      {
-        key: 'edit',
-        label: 'Chỉnh sửa thông tin',
-        icon: <EditOutlined />,
-        type: 'primary',
-        onClick: (data) => {
-          setViewSidebarOpen(false);
-          handleOpenEdit(data);
-        },
-      },
-      {
-        key: 'delete',
-        label: 'Xóa nhân viên',
-        icon: <DeleteOutlined />,
-        danger: true,
-        confirm: {
-          title: 'Xóa nhân viên',
-          description: `Bạn có chắc chắn muốn xóa nhân viên ${viewingEmployee?.fullName}?`,
-          okText: 'Xóa',
-          cancelText: 'Hủy',
-        },
-        onClick: (data) => {
-          handleDelete(data.id);
-        },
-      },
-    ],
-  }), [viewingEmployee, handleDelete]);
-
-  // 2. Dynamic Form Sidebar Configuration
-  const formConfig: DynamicFormConfig = useMemo(() => ({
-    title: 'Thêm mới nhân viên',
-    editTitle: 'Cập nhật thông tin nhân viên',
-    isEdit: !!editingEmployee,
-    data: editingEmployee
-      ? {
-          ...editingEmployee,
-          departmentId: editingEmployee.departmentId || departments[0]?.id,
-        }
-      : {
-          departmentId: departments[0]?.id,
-          status: 'active',
-          salary: 15000000,
-          joinDate: new Date().toISOString().split('T')[0],
-        },
-    fields: [
-      {
-        key: 'title_basic',
-        label: 'Thông tin cơ bản',
-        type: 'title',
-        colSpan: 24,
-      },
-      {
-        key: 'fullName',
-        label: 'Họ và tên',
-        type: 'text',
-        required: 'Vui lòng nhập họ và tên nhân viên',
-        placeholder: 'Ví dụ: Nguyễn Văn A',
-        colSpan: 12,
-      },
-      {
-        key: 'code',
-        label: 'Mã nhân viên',
-        type: 'text',
-        placeholder: 'Ví dụ: EMP-009',
-        colSpan: 12,
-      },
-      {
-        key: 'email',
-        label: 'Email công ty',
-        type: 'email',
-        required: 'Vui lòng nhập email hợp lệ',
-        placeholder: 'Ví dụ: an.nguyen@hrm.vn',
-        colSpan: 12,
-      },
-      {
-        key: 'phone',
-        label: 'Số điện thoại',
-        type: 'text',
-        required: 'Vui lòng nhập số điện thoại',
-        placeholder: 'Ví dụ: 0987 654 321',
-        colSpan: 12,
-      },
-      {
-        key: 'title_work_info',
-        label: 'Vị trí & Chế độ làm việc',
-        type: 'title',
-        colSpan: 24,
-      },
-      {
-        key: 'departmentId',
-        label: 'Phòng ban trực thuộc',
-        type: 'select',
-        required: 'Vui lòng chọn phòng ban',
-        placeholder: 'Chọn phòng ban',
-        options: departments.map((d) => ({ label: d.name, value: d.id })),
-        colSpan: 12,
-      },
-      {
-        key: 'position',
-        label: 'Chức danh / Vị trí',
-        type: 'text',
-        required: 'Vui lòng nhập chức vụ',
-        placeholder: 'Ví dụ: Chuyên viên Tuyển dụng',
-        colSpan: 12,
-      },
-      {
-        key: 'status',
-        label: 'Trạng thái nhân sự',
-        type: 'select',
-        required: true,
-        options: EMPLOYEE_STATUS_OPTIONS.filter((o) => o.value !== 'all'),
-        colSpan: 12,
-      },
-      {
-        key: 'salary',
-        label: 'Mức lương cơ bản',
-        type: 'money',
-        required: 'Vui lòng nhập mức lương',
-        colSpan: 12,
-      },
-      {
-        key: 'joinDate',
-        label: 'Ngày bắt đầu vào làm',
-        type: 'date',
-        required: 'Vui lòng chọn ngày vào làm',
-        colSpan: 12,
-      },
-      {
-        key: 'address',
-        label: 'Địa chỉ thường trú / liên hệ',
-        type: 'textarea',
-        placeholder: 'Nhập địa chỉ liên hệ...',
-        colSpan: 24,
-      },
-    ],
-  }), [editingEmployee, departments]);
-
   // Table Columns
-  const columns: CommonTableColumn<Employee>[] = [
-    {
-      title: 'Mã NV & Họ tên',
-      key: 'name',
-      width: 280,
-      renderUser: (record) => ({
-        avatar: record.avatar,
-        name: record.fullName,
-        code: record.code,
-        subtext: record.email,
-      }),
-    },
-    {
-      title: 'Phòng ban & Chức danh',
-      key: 'department',
-      width: 250,
-      renderTitleSubtitle: (record) => ({
-        title: record.departmentName,
-        subtitle: record.position,
-      }),
-    },
-    {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 150,
-      ellipsis: true,
-      sorter: (a, b) => a.phone.localeCompare(b.phone),
-    },
-    {
-      title: 'Mức lương cơ bản',
-      dataIndex: 'salary',
-      key: 'salary',
-      width: 160,
-      align: 'right',
-      sorter: (a, b) => a.salary - b.salary,
-      renderCurrency: true,
-    },
-    {
-      title: 'Ngày vào làm',
-      dataIndex: 'joinDate',
-      key: 'joinDate',
-      width: 140,
-      align: 'center',
-      renderDate: true,
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      width: 140,
-      align: 'center',
-      renderStatus: true,
-    },
-  ];
+  const columns: CommonTableColumn<Employee>[] = useMemo(
+    () => [
+      {
+        title: 'Mã NV & Họ tên',
+        key: 'name',
+        width: 280,
+        renderUser: (record) => ({
+          avatar: record.avatar,
+          name: record.fullName,
+          code: record.code,
+          subtext: record.email,
+        }),
+      },
+      {
+        title: 'Phòng ban & Chức danh',
+        key: 'department',
+        width: 250,
+        renderTitleSubtitle: (record) => ({
+          title: record.departmentName,
+          subtitle: record.position,
+        }),
+      },
+      {
+        title: 'Số điện thoại',
+        dataIndex: 'phone',
+        key: 'phone',
+        width: 150,
+        ellipsis: true,
+        sorter: (a, b) => a.phone.localeCompare(b.phone),
+      },
+      {
+        title: 'Mức lương cơ bản',
+        dataIndex: 'salary',
+        key: 'salary',
+        width: 160,
+        align: 'right',
+        sorter: (a, b) => a.salary - b.salary,
+        renderCurrency: true,
+      },
+      {
+        title: 'Ngày vào làm',
+        dataIndex: 'joinDate',
+        key: 'joinDate',
+        width: 140,
+        align: 'center',
+        renderDate: true,
+      },
+      {
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        width: 140,
+        align: 'center',
+        renderStatus: true,
+      },
+    ],
+    []
+  );
 
   return (
     <div>
+      {/* 1. Page Header */}
       <PageHeader
         title="Quản lý Nhân viên"
         actions={[
           {
             key: 'export-excel',
             label: 'Xuất Excel',
-            icon: <FileExcelOutlined />,
+            icon: <ExportOutlined />,
             variant: 'secondary',
-            onClick: () => window.alert('Xuất báo cáo Excel thành công'),
+            onClick: () =>
+              notify.success({
+                title: 'Xuất Excel thành công',
+                description: 'Dữ liệu danh sách nhân viên đã được trích xuất thành tệp Excel.',
+              }),
           },
           {
             key: 'add-employee',
@@ -451,7 +193,7 @@ export const EmployeeListPage: React.FC = () => {
         ]}
       />
 
-      {/* Filter Bar */}
+      {/* 2. Filter Bar */}
       <FilterBar
         items={[
           {
@@ -463,13 +205,11 @@ export const EmployeeListPage: React.FC = () => {
             name: 'departmentId',
             type: 'select',
             placeholder: 'Tất cả phòng ban',
-            options: [
-              { label: 'Tất cả phòng ban', value: 'all' },
-              ...departments.map((d) => ({
-                label: d.name,
-                value: d.id,
-              })),
-            ],
+            search: true,
+            options: departments.map((d) => ({
+              label: d.name,
+              value: d.id,
+            })),
           },
           {
             name: 'status',
@@ -498,7 +238,7 @@ export const EmployeeListPage: React.FC = () => {
         loading={isLoading}
       />
 
-      {/* Common Table with Excel Freeze Panes (STT fixed left, Thao tác fixed right) */}
+      {/* 3. Table */}
       <CommonTable<Employee>
         columns={columns}
         dataSource={employees}
@@ -536,23 +276,26 @@ export const EmployeeListPage: React.FC = () => {
         ]}
       />
 
-      {/* 1. Dynamic View Sidebar: Xem chi tiết nhân viên với điều hướng Next/Prev */}
-      <DynamicViewSidebar<Employee>
-        config={viewConfig}
+      {/* 4. View Sidebar */}
+      <EmployeeView
         open={viewSidebarOpen}
         onClose={() => setViewSidebarOpen(false)}
-        data={viewingEmployee}
-        navigationIds={employees.map((e) => e.id)}
-        currentIndex={employees.findIndex((e) => e.id === viewingEmployee?.id)}
-        totalCount={employees.length}
-        onNavigate={(_id, idx) => setViewingEmployee(employees[idx])}
+        employee={viewingEmployee}
+        employees={employees}
+        onEdit={(emp) => {
+          setViewSidebarOpen(false);
+          handleOpenEdit(emp);
+        }}
+        onDelete={handleDelete}
+        onNavigate={(idx) => setViewingEmployee(employees[idx])}
       />
 
-      {/* 2. Dynamic Form Sidebar: Thêm mới / Cập nhật nhân viên dạng sidebar tiện lợi */}
-      <DynamicFormSidebar
-        config={formConfig}
+      {/* 5. Create or Update Sidebar */}
+      <EmployeeCreateOrUpdate
         open={formSidebarOpen}
         onClose={() => setFormSidebarOpen(false)}
+        employee={editingEmployee}
+        departments={departments}
         onSubmit={handleFormSubmit}
         saving={createMutation.isPending || updateMutation.isPending}
       />
@@ -560,4 +303,6 @@ export const EmployeeListPage: React.FC = () => {
   );
 };
 
+export { EmployeeView } from './EmployeeView';
+export { EmployeeCreateOrUpdate } from './EmployeeCreateOrUpdate';
 export default EmployeeListPage;

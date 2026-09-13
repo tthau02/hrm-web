@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import {
   Drawer,
   Tabs,
@@ -19,6 +19,7 @@ import {
 } from '@ant-design/icons';
 import type { DynamicViewSidebarProps, ViewActionConfig } from './types';
 import { DynamicFieldDisplay } from './DynamicFieldDisplay';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export function DynamicViewSidebar<T = any>({
   config,
@@ -38,7 +39,15 @@ export function DynamicViewSidebar<T = any>({
   style,
 }: DynamicViewSidebarProps<T>) {
   const { token } = antdTheme.useToken();
+  const { isMobile, screenWidth } = useResponsive();
   const activeData: T = (propData ?? config.data ?? ({} as T));
+
+  // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
+  const responsiveWidth = useMemo(() => {
+    if (isMobile) return '100%';
+    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 720), 10);
+    return Math.min(numericWidth, Math.round(screenWidth * 0.95));
+  }, [isMobile, width, screenWidth]);
 
   // Navigation handlers
   const canGoPrevious = currentIndex > 0;
@@ -229,6 +238,7 @@ export function DynamicViewSidebar<T = any>({
 
     return (
       <div
+        className="drawer-footer-actions"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -269,7 +279,7 @@ export function DynamicViewSidebar<T = any>({
     <Drawer
       open={open}
       onClose={onClose}
-      width={width}
+      width={responsiveWidth}
       placement={placement}
       title={renderHeader()}
       footer={renderFooter()}

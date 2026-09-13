@@ -4,13 +4,12 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CalendarOutlined,
-  LoginOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
-import { PageHeader } from '@/components/common/PageHeader';
-import { StatCard } from '@/components/common/StatCard';
+import { PageHeader, StatCard, notify } from '@/components/common';
 import { useEmployeesQuery } from '@/hooks/useHrmQuery';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { Text } = Typography;
 
@@ -27,6 +26,7 @@ interface AttendanceTableItem {
 }
 
 export const AttendancePage: React.FC = () => {
+  const { isMobile } = useResponsive();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const { data: empResponse, isLoading } = useEmployeesQuery();
   const employees = empResponse?.data || [];
@@ -131,22 +131,26 @@ export const AttendancePage: React.FC = () => {
         subtitle="Theo dõi thời gian ra vào và tính công tự động theo ca"
         breadcrumbs={[{ title: 'Chấm công' }, { title: 'Bảng công ngày' }]}
         extra={
-          <Space>
+          <Space wrap style={{ width: isMobile ? '100%' : 'auto' }}>
             <DatePicker
               value={selectedDate}
               onChange={(d) => d && setSelectedDate(d)}
               format="DD/MM/YYYY"
+              style={{ width: isMobile ? '100%' : 150 }}
             />
             <Button
               type="primary"
-              icon={<LoginOutlined />}
-              onClick={() => window.alert('Check-in hôm nay thành công!')}
+              icon={<CheckCircleOutlined />}
+              onClick={() =>
+                notify.success({
+                  message: 'Chấm công thành công',
+                  description: 'Hệ thống đã ghi nhận thời gian check-in của bạn hôm nay.',
+                })
+              }
+              className="btn-cursor-primary"
               style={{
-                backgroundColor: '#f54e00',
-                borderColor: '#f54e00',
+                width: isMobile ? '100%' : 'auto',
                 height: 40,
-                borderRadius: 8,
-                fontWeight: 500,
               }}
             >
               Chấm công ngay
@@ -199,7 +203,11 @@ export const AttendancePage: React.FC = () => {
           columns={columns}
           dataSource={attendanceData}
           loading={isLoading}
-          pagination={{ pageSize: 8 }}
+          scroll={{ x: 750 }}
+          pagination={{
+            pageSize: 8,
+            size: isMobile ? 'small' : undefined,
+          }}
         />
       </Card>
     </div>

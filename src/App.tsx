@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { store, useAppSelector } from '@/store';
 import { AppRoutes } from '@/routes';
+import { NotificationBridge } from '@/components/common';
 
 // Initialize QueryClient
 const queryClient = new QueryClient({
@@ -58,6 +59,10 @@ const ThemedApp: React.FC = () => {
             controlHeight: 40,
             borderRadius: 8,
           },
+          InputNumber: {
+            controlHeight: 40,
+            borderRadius: 8,
+          },
           Select: {
             controlHeight: 40,
             borderRadius: 8,
@@ -72,10 +77,17 @@ const ThemedApp: React.FC = () => {
           Table: {
             borderRadius: 12,
           },
+          Menu: {
+            colorBgContainer: 'transparent',
+            subMenuItemBg: 'transparent',
+            itemBorderRadius: 8,
+            itemHeight: 40,
+          },
         },
       }}
     >
       <AntdApp>
+        <NotificationBridge />
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>

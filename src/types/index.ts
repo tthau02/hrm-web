@@ -34,7 +34,6 @@ export const EMPLOYEE_STATUS_LABELS: Record<EmployeeStatus, string> = {
 };
 
 export const EMPLOYEE_STATUS_OPTIONS = [
-  { label: 'Tất cả trạng thái', value: 'all' },
   { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.ACTIVE], value: EmployeeStatusEnum.ACTIVE },
   { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.PROBATION], value: EmployeeStatusEnum.PROBATION },
   { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.ON_LEAVE], value: EmployeeStatusEnum.ON_LEAVE },

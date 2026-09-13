@@ -129,6 +129,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
       {/* Main Header Row: Left Title - Right Actions */}
       <div
+        className="common-page-header-content"
         style={{
           display: 'flex',
           alignItems: subtitle ? 'flex-start' : 'center',
@@ -179,10 +180,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
         {/* Right: Action Buttons (Object config or Extra ReactNode) */}
         {(actions.length > 0 || extra) && (
-          <Space size="middle" wrap>
-            {actions.map((act, idx) => renderAction(act, idx))}
-            {extra}
-          </Space>
+          <div className="common-page-header-actions">
+            <Space size="middle" wrap>
+              {actions.map((act, idx) => renderAction(act, idx))}
+              {extra}
+            </Space>
+          </div>
         )}
       </div>
     </div>

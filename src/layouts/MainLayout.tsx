@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   Layout,
   Menu,
@@ -9,12 +9,14 @@ import {
   Badge,
   Typography,
   Switch,
+  Drawer,
   theme as antdTheme,
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  MenuOutlined,
   BellOutlined,
   UserOutlined,
   LogoutOutlined,
@@ -24,7 +26,8 @@ import {
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
-import { toggleSidebar, toggleTheme } from '@/store/slices/themeSlice';
+import { toggleSidebar, setSidebarCollapsed, toggleTheme } from '@/store/slices/themeSlice';
+import { useResponsive } from '@/hooks/useResponsive';
 import {
   appNavigations,
   filterNavItemsByRole,
@@ -38,12 +41,21 @@ export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { isMobile, isTablet } = useResponsive();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Active Ant Design design tokens
   const { token } = antdTheme.useToken();
 
   const user = useAppSelector((state) => state.auth.user);
   const { collapsedSidebar, isDarkMode } = useAppSelector((state) => state.theme);
+
+  // Auto-collapse sidebar on tablet viewports to maximize workspace breathing room
+  useEffect(() => {
+    if (isTablet && !collapsedSidebar) {
+      dispatch(setSidebarCollapsed(true));
+    }
+  }, [isTablet, collapsedSidebar, dispatch]);
 
   // Dynamic menu items filtered by user role and support parent/child hierarchy
   const filteredNavItems = useMemo(
@@ -65,6 +77,9 @@ export const MainLayout: React.FC = () => {
   }, [currentKey]);
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
+    if (isMobile) {
+      setMobileNavOpen(false);
+    }
     if (e.key && e.key.startsWith('/')) {
       const findPath = (items: typeof appNavigations, key: string): string => {
         for (const item of items) {
@@ -159,7 +174,6 @@ export const MainLayout: React.FC = () => {
             items={menuItems}
             onClick={handleMenuClick}
             className="hrm-sidebar-menu"
-            theme={isDarkMode ? 'dark' : 'light'}
           />
         </div>
       </Sider>
@@ -174,29 +188,37 @@ export const MainLayout: React.FC = () => {
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
           }}
         >
-          {/* Left: Sidebar Collapse Trigger */}
+          {/* Left: Sidebar Collapse Trigger (Desktop: collapse toggle, Mobile: open drawer) */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               type="text"
               icon={
-                collapsedSidebar ? (
+                isMobile ? (
+                  <MenuOutlined style={{ fontSize: 16, color: token.colorTextHeading }} />
+                ) : collapsedSidebar ? (
                   <MenuUnfoldOutlined style={{ fontSize: 16, color: token.colorTextHeading }} />
                 ) : (
                   <MenuFoldOutlined style={{ fontSize: 16, color: token.colorTextHeading }} />
                 )
               }
-              onClick={() => dispatch(toggleSidebar())}
+              onClick={() => {
+                if (isMobile) {
+                  setMobileNavOpen(true);
+                } else {
+                  dispatch(toggleSidebar());
+                }
+              }}
               className="btn-icon-hairline"
               style={{
                 background: token.colorBgContainer,
                 border: `1px solid ${token.colorBorderSecondary}`,
               }}
-              title="Đóng / Mở menu sidebar"
+              title={isMobile ? 'Mở menu' : 'Đóng / Mở menu sidebar'}
             />
           </div>
 
           {/* Right: Theme Switch, Notifications & User profile */}
-          <Space size="middle" align="center">
+          <Space size={isMobile ? 'small' : 'middle'} align="center">
             {/* Theme Toggle Switch with Sun/Moon indicator */}
             <div
               className="theme-toggle-pill"
@@ -276,7 +298,7 @@ export const MainLayout: React.FC = () => {
                     border: `1px solid ${token.colorBorderSecondary}`,
                   }}
                 />
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+                <div className="hrm-user-chip-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
                   <Text style={{ fontSize: 13, fontWeight: 500, color: token.colorTextHeading }}>
                     {user?.name || 'Nguyễn Văn Quản Trị'}
                   </Text>
@@ -294,6 +316,44 @@ export const MainLayout: React.FC = () => {
           <Outlet />
         </Content>
       </Layout>
+
+      {/* Mobile Off-canvas Navigation Drawer */}
+      {isMobile && (
+        <Drawer
+          placement="left"
+          open={mobileNavOpen}
+          onClose={() => setMobileNavOpen(false)}
+          width={280}
+          styles={{
+            body: { padding: 0, background: token.colorBgContainer },
+            header: { borderBottom: `1px solid ${token.colorBorderSecondary}`, padding: '12px 16px' },
+          }}
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="hrm-logo-icon">H</div>
+              <div>
+                <div className="hrm-brand-title" style={{ color: token.colorTextHeading }}>
+                  HRM Portal
+                </div>
+                <div className="hrm-brand-tag" style={{ color: token.colorTextSecondary }}>
+                  Enterprise
+                </div>
+              </div>
+            </div>
+          }
+        >
+          <div className="hrm-sidebar-menu-wrap">
+            <Menu
+              mode="inline"
+              selectedKeys={[currentKey]}
+              defaultOpenKeys={defaultOpenKeys}
+              items={menuItems}
+              onClick={handleMenuClick}
+              className="hrm-sidebar-menu"
+            />
+          </div>
+        </Drawer>
+      )}
     </Layout>
   );
 };

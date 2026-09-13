@@ -44,6 +44,7 @@ export interface FormFieldConfig<T = any> {
   description?: string;
   options?: FormFieldOption[];
   rules?: Rule[];
+  search?: boolean;
   validation?: {
     min?: number;
     max?: number;
@@ -57,6 +58,8 @@ export interface FormFieldConfig<T = any> {
     max?: number;
     step?: number;
     precision?: number;
+    addonAfter?: React.ReactNode;
+    suffix?: React.ReactNode;
   };
   textareaConfig?: {
     rows?: number;
@@ -64,6 +67,7 @@ export interface FormFieldConfig<T = any> {
     showCount?: boolean;
   };
   selectConfig?: {
+    search?: boolean;
     showSearch?: boolean;
     allowClear?: boolean;
     mode?: 'multiple' | 'tags';
@@ -100,6 +104,8 @@ export interface DynamicFormConfig<T = any> {
   submitText?: string;
   editSubmitText?: string;
   cancelText?: string;
+  submitIcon?: React.ReactNode;
+  cancelIcon?: React.ReactNode;
 }
 
 export interface DynamicFormSidebarProps<T = any> {

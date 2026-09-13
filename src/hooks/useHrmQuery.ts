@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { employeeApi, departmentApi, dashboardApi } from '@/api/endpoints';
 import type { Employee, EmployeeFilterParams } from '@/types';
-import { message } from 'antd';
+import { notify } from '@/components/common';
 
 export const QUERY_KEYS = {
   employees: (params?: EmployeeFilterParams) => ['employees', params],
@@ -41,12 +41,12 @@ export const useCreateEmployeeMutation = () => {
   return useMutation({
     mutationFn: (data: Partial<Employee>) => employeeApi.create(data),
     onSuccess: () => {
-      message.success('Thêm nhân viên mới thành công!');
+      notify.success('Thêm nhân viên mới thành công!', 'Hồ sơ nhân viên đã được thêm vào hệ thống.');
       queryClient.invalidateQueries({ queryKey: ['employees'] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
     },
     onError: (err: unknown) => {
-      message.error(getErrorMessage(err, 'Không thể thêm nhân viên'));
+      notify.error('Không thể thêm nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi tạo nhân viên.'));
     },
   });
 };
@@ -58,12 +58,12 @@ export const useUpdateEmployeeMutation = () => {
     mutationFn: ({ id, data }: { id: string; data: Partial<Employee> }) =>
       employeeApi.update(id, data),
     onSuccess: () => {
-      message.success('Cập nhật thông tin nhân viên thành công!');
+      notify.success('Cập nhật thông tin thành công!', 'Dữ liệu nhân viên đã được lưu.');
       queryClient.invalidateQueries({ queryKey: ['employees'] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
     },
     onError: (err: unknown) => {
-      message.error(getErrorMessage(err, 'Không thể cập nhật nhân viên'));
+      notify.error('Không thể cập nhật nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi cập nhật.'));
     },
   });
 };
@@ -74,12 +74,12 @@ export const useDeleteEmployeeMutation = () => {
   return useMutation({
     mutationFn: (id: string) => employeeApi.delete(id),
     onSuccess: () => {
-      message.success('Xóa nhân viên thành công!');
+      notify.success('Xóa nhân viên thành công!', 'Hồ sơ nhân sự đã được xóa khỏi hệ thống.');
       queryClient.invalidateQueries({ queryKey: ['employees'] });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
     },
     onError: (err: unknown) => {
-      message.error(getErrorMessage(err, 'Không thể xóa nhân viên'));
+      notify.error('Không thể xóa nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi xóa nhân viên.'));
     },
   });
 };

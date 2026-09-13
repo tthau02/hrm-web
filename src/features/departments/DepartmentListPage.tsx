@@ -6,7 +6,7 @@ import {
   TeamOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { PageHeader } from '@/components/common/PageHeader';
+import { PageHeader, notify } from '@/components/common';
 import { useDepartmentsQuery } from '@/hooks/useHrmQuery';
 
 const { Text, Paragraph } = Typography;
@@ -33,7 +33,11 @@ export const DepartmentListPage: React.FC = () => {
             label: 'Thêm phòng ban mới',
             icon: <PlusOutlined />,
             variant: 'primary',
-            onClick: () => window.alert('Mở form tạo phòng ban'),
+            onClick: () =>
+              notify.info({
+                message: 'Thêm phòng ban mới',
+                description: 'Biểu mẫu tạo phòng ban mới đang được cập nhật trong phiên bản tiếp theo.',
+              }),
           },
         ]}
       />

@@ -15,6 +15,7 @@ import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { MoreOutlined, UserOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { StatusBadge } from './StatusBadge';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export interface CommonTableActionItem {
   key: string;
@@ -96,6 +97,7 @@ export function CommonTable<T extends object>({
   ...tableProps
 }: CommonTableProps<T>) {
   const { token } = antdTheme.useToken();
+  const { isMobile } = useResponsive();
 
   // Track active page and size for accurate STT calculation across pagination changes
   const [currentPg, setCurrentPg] = React.useState<number>(
@@ -471,9 +473,10 @@ export function CommonTable<T extends object>({
             ? false
             : {
                 pageSize: 10,
-                showSizeChanger: true,
-                showTotal: (total) => `Tổng số ${total} bản ghi`,
-                style: { padding: '0 16px 12px' },
+                size: isMobile ? 'small' : undefined,
+                showSizeChanger: !isMobile,
+                showTotal: (total) => (isMobile ? `Tổng: ${total}` : `Tổng số ${total} bản ghi`),
+                style: { padding: isMobile ? '8px 12px 10px' : '0 16px 12px' },
                 ...pagination,
               }
         }

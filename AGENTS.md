@@ -56,7 +56,8 @@ hrm-web/
 │   │   │   ├── StatCard.tsx             # Thẻ chỉ số KPI / thống kê
 │   │   │   ├── StatusBadge.tsx          # Huy hiệu trạng thái (Active, Probation...)
 │   │   │   ├── DynamicViewSidebar/      # Sidebar xem chi tiết kèm phân trang record
-│   │   │   └── DynamicFormSidebar/      # Sidebar thêm mới / chỉnh sửa dữ liệu
+│   │   │   ├── DynamicFormSidebar/      # Sidebar thêm mới / chỉnh sửa dữ liệu
+│   │   │   └── Notification.tsx         # Thông báo bottomRight thay thế window.alert
 │   ├── features/                        # Các module tính năng (employees, departments...)
 │   ├── hooks/                           # Custom hooks (useHrmQuery...)
 │   ├── layouts/                         # MainLayout, Sidebar, Header
@@ -194,10 +195,7 @@ const filterFields: FilterField[] = [
     name: 'departmentId',
     type: 'select',
     placeholder: 'Tất cả phòng ban',
-    options: [
-      { label: 'Tất cả phòng ban', value: 'all' },
-      ...departmentOptions,
-    ],
+    options: departmentOptions, // FilterBar tự động thêm option 'Tất cả' theo placeholder
     width: 200,
   },
   {
@@ -205,7 +203,6 @@ const filterFields: FilterField[] = [
     type: 'select',
     placeholder: 'Tất cả trạng thái',
     options: [
-      { label: 'Tất cả trạng thái', value: 'all' },
       { label: 'Chính thức', value: 'active' },
       { label: 'Thử việc', value: 'probation' },
       { label: 'Nghỉ phép', value: 'on_leave' },
@@ -397,6 +394,43 @@ import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 
 ---
 
+### 4.6 `notify` & `useNotification` (Notification bottomRight kèm `showProgress` & `pauseOnHover`)
+
+Thay thế các `window.alert(...)` và toast cũ bằng thông báo hiện đại của Ant Design tại vị trí góc dưới bên phải (`bottomRight`), tích hợp thanh đếm ngược tiến trình (`showProgress: true`) và tự động tạm dừng khi rê chuột (`pauseOnHover: true`), tuân thủ chuẩn hairline border và dark/light mode:
+
+```tsx
+import { notify, useNotification } from '@/components/common';
+
+// Cách 1: Dùng trực tiếp qua helper `notify` (nhanh gọn, không cần hook & contextHolder)
+notify.success('Xuất file Excel thành công!');
+notify.error('Không thể kết nối đến máy chủ');
+notify.info('Tính năng đang được phát triển');
+notify.warning('Vui lòng kiểm tra lại thông tin');
+
+// Dạng kèm tiêu đề + mô tả chi tiết:
+notify.success('Thành công', 'Dữ liệu nhân viên đã được cập nhật.');
+
+// Dạng truyền object tùy biến đầy đủ (hỗ trợ title, description, showProgress, pauseOnHover):
+notify.success({
+  title: 'Xuất Excel thành công',
+  description: 'Dữ liệu danh sách nhân viên đã được trích xuất thành tệp Excel.',
+  showProgress: true,
+  pauseOnHover: true,
+  duration: 4,
+});
+
+// Cách 2: Dùng hook nội bộ `useNotification` nếu cần quản lý contextHolder độc lập
+const [api, contextHolder] = useNotification();
+api.open({
+  title: 'Notification Title',
+  description: 'Nội dung thông báo...',
+  showProgress: true,
+  pauseOnHover: true,
+});
+```
+
+---
+
 ## 5. Checklist khi AI Agent code tính năng mới
 
 - [ ] Đã đọc `DESIGN.md` để áp dụng màu Cursor Orange `#f54e00`, viền 1px hairline, không dùng drop shadow nhòe.
@@ -404,5 +438,6 @@ import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 - [ ] Bộ lọc dùng `FilterBar`.
 - [ ] Xem chi tiết dùng `DynamicViewSidebar` thay vì modal thông thường.
 - [ ] Thêm / Sửa dùng `DynamicFormSidebar`.
+- [ ] Thông báo phản hồi dùng `notify` (`bottomRight`), **tuyệt đối không dùng `window.alert`**.
 - [ ] Kiểm tra cả Light Mode và Dark Mode sau khi hoàn thành.
 - [ ] Chạy `npm run lint` và `npm run build` để kiểm tra TypeScript và cú pháp.

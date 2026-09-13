@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { RangePicker } = DatePicker;
 
@@ -33,7 +34,11 @@ export interface FilterField {
   width?: number | string;
   allowClear?: boolean;
   disabled?: boolean;
+  search?: boolean;
+  showSearch?: boolean;
   style?: React.CSSProperties;
+  includeAll?: boolean;
+  allLabel?: string;
   customRender?: (props: {
     value: FilterValue;
     onChange: (val: FilterValue) => void;
@@ -87,6 +92,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   style,
 }) => {
   const { token } = antdTheme.useToken();
+  const { isMobile, isTablet } = useResponsive();
 
   // Compute default values once (automatically defaults select with 'all' option to 'all')
   const getInitialValues = useCallback(() => {
@@ -95,8 +101,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       if (item.defaultValue !== undefined) {
         init[item.name] = item.defaultValue;
       } else if (item.type === 'select') {
-        const hasAll = item.options?.some((opt) => opt.value === 'all');
-        init[item.name] = hasAll ? 'all' : undefined;
+        const includeAll = item.includeAll !== false;
+        init[item.name] = includeAll ? 'all' : undefined;
       } else {
         init[item.name] = undefined;
       }
@@ -122,8 +128,38 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   const handleSearch = () => {
+    // Auto-trim all string values on search
+    const trimmedState: Record<string, FilterValue> = {};
+    let hasTrimmed = false;
+
+    Object.keys(filterState).forEach((k) => {
+      const v = filterState[k];
+      if (typeof v === 'string' && v !== v.trim()) {
+        trimmedState[k] = v.trim();
+        hasTrimmed = true;
+      } else {
+        trimmedState[k] = v;
+      }
+    });
+
+    if (hasTrimmed) {
+      if (controlledValues === undefined) {
+        setInternalState(trimmedState);
+      }
+      if (onChange) {
+        Object.keys(trimmedState).forEach((k) => {
+          if (trimmedState[k] !== filterState[k]) {
+            onChange(k, trimmedState[k], trimmedState);
+          }
+        });
+      }
+      if (onFilterChange) {
+        onFilterChange(trimmedState);
+      }
+    }
+
     if (onSearch) {
-      onSearch(filterState);
+      onSearch(trimmedState);
     }
   };
 
@@ -151,13 +187,29 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     const isRange = item.type === 'dateRange';
     const fieldWidth = item.width || (isRange ? Math.max(itemWidth + 40, 280) : itemWidth);
 
-    const containerStyle: React.CSSProperties = {
-      width: fieldWidth,
-      minWidth: 180,
-      flex: `0 0 ${typeof fieldWidth === 'number' ? `${fieldWidth}px` : fieldWidth}`,
-      boxSizing: 'border-box',
-      ...item.style,
-    };
+    const containerStyle: React.CSSProperties = isMobile
+      ? {
+          width: '100%',
+          minWidth: '100%',
+          flex: '1 1 100%',
+          boxSizing: 'border-box',
+          ...item.style,
+        }
+      : isTablet
+        ? {
+            width: 'calc(50% - 6px)',
+            minWidth: 160,
+            flex: '1 1 calc(50% - 6px)',
+            boxSizing: 'border-box',
+            ...item.style,
+          }
+        : {
+            width: fieldWidth,
+            minWidth: 180,
+            flex: `0 0 ${typeof fieldWidth === 'number' ? `${fieldWidth}px` : fieldWidth}`,
+            boxSizing: 'border-box',
+            ...item.style,
+          };
 
     let controlNode: React.ReactNode = null;
 
@@ -171,6 +223,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
             onChange={(e) => handleFieldChange(item.name, e.target.value)}
+            onBlur={(e) => {
+              const raw = e.target.value;
+              if (typeof raw === 'string' && raw !== raw.trim()) {
+                handleFieldChange(item.name, raw.trim());
+              }
+            }}
             onPressEnter={handleSearch}
             style={{ width: '100%' }}
           />
@@ -185,6 +243,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
             onChange={(e) => handleFieldChange(item.name, e.target.value)}
+            onBlur={(e) => {
+              const raw = e.target.value;
+              if (typeof raw === 'string' && raw !== raw.trim()) {
+                handleFieldChange(item.name, raw.trim());
+              }
+            }}
             onPressEnter={handleSearch}
             style={{ width: '100%' }}
           />
@@ -192,19 +256,42 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         break;
 
       case 'select': {
-        const hasAll = item.options?.some((opt) => opt.value === 'all');
-        const selectVal = val !== undefined ? val : (hasAll ? 'all' : undefined);
+        const includeAll = item.includeAll !== false;
+        const hasAllInOptions = item.options?.some((opt) => opt.value === 'all');
+        const defaultAllLabel =
+          item.allLabel ||
+          (typeof item.placeholder === 'string' && item.placeholder.trim()
+            ? item.placeholder.startsWith('Tất cả')
+              ? item.placeholder
+              : `Tất cả ${item.placeholder.replace(/^Chọn\s*/i, '').toLowerCase()}`
+            : 'Tất cả');
+
+        const resolvedOptions =
+          includeAll && !hasAllInOptions
+            ? [{ label: defaultAllLabel, value: 'all' }, ...(item.options || [])]
+            : item.options || [];
+
+        const selectVal = val !== undefined ? val : (includeAll ? 'all' : undefined);
+        const isSearchable = Boolean(item.search ?? item.showSearch);
         controlNode = (
           <Select
             placeholder={(item.placeholder as string) || 'Chọn...'}
             value={selectVal as string | number | undefined}
-            options={item.options}
+            options={resolvedOptions}
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
-            showSearch
+            showSearch={isSearchable}
+            filterOption={
+              isSearchable
+                ? (input, option) =>
+                    String(option?.label ?? '')
+                      .toLowerCase()
+                      .includes(input.trim().toLowerCase())
+                : undefined
+            }
             optionFilterProp="label"
             onChange={(selectedVal) =>
-              handleFieldChange(item.name, selectedVal ?? (hasAll ? 'all' : undefined))
+              handleFieldChange(item.name, selectedVal ?? (includeAll ? 'all' : undefined))
             }
             style={{ width: '100%', height: 40 }}
           />
@@ -293,6 +380,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       styles={{ body: { padding: 14 } }}
     >
       <div
+        className="common-filter-bar-content"
         style={{
           display: 'flex',
           flexWrap: 'wrap',
@@ -303,6 +391,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       >
         {/* Filter Inputs: Equal width and clean line-wrapping */}
         <div
+          className="common-filter-bar-inputs"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -315,7 +404,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         {/* Action Buttons: Tìm kiếm & Làm mới (Default) */}
-        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+        <div className="common-filter-bar-actions" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <Space size="middle" wrap>
             {showSearchButton && (
               <Button
