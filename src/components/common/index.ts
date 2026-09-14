@@ -6,3 +6,5 @@ export * from './StatusBadge';
 export * from './DynamicViewSidebar';
 export * from './DynamicFormSidebar';
 export * from './Notification';
+export * from './ChangeHistory';
+export { useCrudModal, type UseCrudModalReturn } from '@/hooks/useCrudModal';

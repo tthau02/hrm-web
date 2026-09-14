@@ -17,7 +17,7 @@ import {
   ExclamationCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import type { DynamicViewSidebarProps, ViewActionConfig } from './types';
+import type { DynamicViewSidebarProps, ViewActionConfig, DynamicViewSection, ViewFieldConfig } from './types';
 import { DynamicFieldDisplay } from './DynamicFieldDisplay';
 import { useResponsive } from '@/hooks/useResponsive';
 
@@ -97,6 +97,7 @@ export function DynamicViewSidebar<T = any>({
   const handleActionClick = (action: ViewActionConfig<T>) => {
     if (action.confirm) {
       Modal.confirm({
+        centered: action.confirm.centered ?? true,
         title: action.confirm.title,
         content: action.confirm.description,
         icon: <ExclamationCircleOutlined style={{ color: action.danger ? '#cf2d56' : token.colorPrimary }} />,
@@ -202,29 +203,74 @@ export function DynamicViewSidebar<T = any>({
   };
 
   // Render list of fields in grid
-  const renderFieldList = (fields: typeof config.fields) => {
+  const renderFieldList = (fields?: ViewFieldConfig<T>[], defaultCols = 2) => {
     if (!fields || fields.length === 0) return null;
 
     return (
       <Row gutter={[16, 4]}>
-        {fields.map((field) => {
+        {fields.map((field, idx) => {
           const isHidden =
             typeof field.hidden === 'function' ? field.hidden(activeData) : field.hidden;
           if (isHidden) return null;
 
-          const span = field.colSpan || (field.type === 'title' || field.type === 'divider' ? 24 : 12);
+          const fieldKey = (field.name || field.key || `field-${idx}`).trim();
+          const defaultSpan = Math.round(24 / defaultCols);
+          const span =
+            field.span ??
+            field.colSpan ??
+            (field.type === 'title' || field.type === 'divider' ? 24 : defaultSpan);
 
           return (
-            <Col key={field.key} span={span} xs={24} sm={span}>
+            <Col key={fieldKey} span={span} xs={24} sm={span}>
               <DynamicFieldDisplay
                 field={field}
-                value={(activeData as any)?.[field.key]}
+                value={(activeData as any)?.[fieldKey]}
                 data={activeData}
               />
             </Col>
           );
         })}
       </Row>
+    );
+  };
+
+  // Render list of sections (grouped cards with titles and custom column grid)
+  const renderSectionList = (sections?: DynamicViewSection<T>[]) => {
+    if (!sections || sections.length === 0) return null;
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {sections.map((section, sIdx) => {
+          const cols = section.columns || 2;
+          return (
+            <div
+              key={section.title || `sec-${sIdx}`}
+              style={{
+                borderRadius: 10,
+                border: `1px solid ${token.colorBorderSecondary}`,
+                background: token.colorBgContainer,
+                padding: '16px 18px',
+              }}
+            >
+              {section.title && (
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: token.colorTextHeading,
+                    marginBottom: 12,
+                    paddingBottom: 8,
+                    borderBottom: `1px solid ${token.colorBorderSecondary}`,
+                  }}
+                >
+                  {section.title}
+                </div>
+              )}
+              {renderFieldList(section.fields, cols)}
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
@@ -331,7 +377,10 @@ export function DynamicViewSidebar<T = any>({
                 <div style={{ paddingTop: 12 }}>
                   {typeof tab.content === 'function'
                     ? tab.content(activeData)
-                    : tab.content || renderFieldList(tab.fields)}
+                    : tab.content ||
+                      (tab.sections && tab.sections.length > 0
+                        ? renderSectionList(tab.sections)
+                        : renderFieldList(tab.fields))}
 
                   {/* Tab-specific actions if any */}
                   {tab.actions && tab.actions.length > 0 && (
@@ -362,6 +411,8 @@ export function DynamicViewSidebar<T = any>({
               ),
             }))}
           />
+        ) : config.sections && config.sections.length > 0 ? (
+          renderSectionList(config.sections)
         ) : (
           renderFieldList(config.fields)
         )}

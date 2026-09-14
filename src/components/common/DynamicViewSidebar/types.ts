@@ -32,10 +32,12 @@ export interface ViewFieldOption {
 }
 
 export interface ViewFieldConfig<T = any> {
-  key: string;
+  key?: string;
+  name?: string; // Alias for key
   label?: string;
   type?: ViewFieldType;
   colSpan?: number; // Out of 24 (default 24 or 12)
+  span?: number; // Alias for colSpan
   hidden?: boolean | ((data: T) => boolean);
   description?: string;
   placeholder?: string;
@@ -69,11 +71,18 @@ export interface ViewFieldConfig<T = any> {
   onToggleChange?: (value: boolean, data: T) => void;
 }
 
+export interface DynamicViewSection<T = any> {
+  title?: string;
+  columns?: number; // 1, 2, 3, 4 (default 2)
+  fields: ViewFieldConfig<T>[];
+}
+
 export interface ViewTabConfig<T = any> {
   key: string;
   label: string;
   icon?: React.ReactNode;
   badge?: number | string;
+  sections?: DynamicViewSection<T>[];
   fields?: ViewFieldConfig<T>[];
   content?: React.ReactNode | ((data: T) => React.ReactNode);
   actions?: ViewActionConfig<T>[];
@@ -94,12 +103,14 @@ export interface ViewActionConfig<T = any> {
     description?: string;
     okText?: string;
     cancelText?: string;
+    centered?: boolean;
   };
 }
 
 export interface DynamicViewConfig<T = any> {
   title?: string;
   subtitle?: string | ((data: T) => React.ReactNode);
+  sections?: DynamicViewSection<T>[];
   fields?: ViewFieldConfig<T>[];
   tabs?: ViewTabConfig<T>[];
   actions?: ViewActionConfig<T>[];

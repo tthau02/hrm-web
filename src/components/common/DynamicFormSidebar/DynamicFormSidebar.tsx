@@ -15,6 +15,9 @@ import {
   Col,
   Tabs,
   Space,
+  Segmented,
+  Rate,
+  TreeSelect,
   theme as antdTheme,
 } from 'antd';
 import {
@@ -28,12 +31,23 @@ import type { Rule } from 'antd/es/form';
 import type { DynamicFormSidebarProps, FormFieldConfig } from './types';
 import { useResponsive } from '@/hooks/useResponsive';
 
+// Safe helper to extract field name / key alias
+export const getFormFieldKey = (field: FormFieldConfig): string => {
+  return (field.name || field.key || '').trim();
+};
+
+// Safe helper to extract field column span alias
+export const getFormFieldSpan = (field: FormFieldConfig): number => {
+  return field.span ?? field.colSpan ?? (field.type === 'textarea' || field.type === 'file' ? 24 : 12);
+};
+
 export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   config,
   open,
   onClose,
   onSubmit,
   data: propData,
+  initialValues: propInitialValues,
   saving = false,
   width = 720,
   placement = 'right',
@@ -52,8 +66,11 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
     return Math.min(numericWidth, Math.round(screenWidth * 0.95));
   }, [isMobile, width, screenWidth]);
 
-  const isEdit = config.isEdit ?? (!!propData || !!config.data);
-  const activeData = useMemo(() => propData ?? config.data ?? {}, [propData, config.data]);
+  const activeData = useMemo(
+    () => propData ?? propInitialValues ?? config.data ?? config.initialValues ?? {},
+    [propData, propInitialValues, config.data, config.initialValues]
+  );
+  const isEdit = config.isEdit ?? (Object.keys(activeData).length > 0);
 
   // Normalize incoming values for form (e.g. convert date strings to dayjs instances)
   const allFields = useMemo(() => {
@@ -73,14 +90,16 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       const formattedValues: Record<string, any> = { ...activeData };
 
       allFields.forEach((fld) => {
-        const val = formattedValues[fld.key];
+        const key = getFormFieldKey(fld);
+        if (!key) return;
+        const val = formattedValues[key];
         if (fld.type === 'date' || fld.type === 'datetime') {
           if (val && typeof val === 'string') {
-            formattedValues[fld.key] = dayjs(val);
+            formattedValues[key] = dayjs(val);
           }
         } else if (fld.type === 'dateRange') {
           if (Array.isArray(val) && val.length === 2) {
-            formattedValues[fld.key] = [dayjs(val[0]), dayjs(val[1])];
+            formattedValues[key] = [dayjs(val[0]), dayjs(val[1])];
           }
         }
       });
@@ -90,8 +109,9 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       // Set defaults
       const defaultValues: Record<string, any> = {};
       allFields.forEach((fld) => {
-        if (fld.defaultValue !== undefined) {
-          defaultValues[fld.key] = fld.defaultValue;
+        const key = getFormFieldKey(fld);
+        if (key && fld.defaultValue !== undefined) {
+          defaultValues[key] = fld.defaultValue;
         }
       });
       form.setFieldsValue(defaultValues);
@@ -113,15 +133,17 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       });
 
       allFields.forEach((fld) => {
-        const val = processed[fld.key];
+        const key = getFormFieldKey(fld);
+        if (!key) return;
+        const val = processed[key];
         if (val && dayjs.isDayjs(val)) {
           if (fld.type === 'date') {
-            processed[fld.key] = val.format('YYYY-MM-DD');
+            processed[key] = val.format('YYYY-MM-DD');
           } else if (fld.type === 'datetime') {
-            processed[fld.key] = val.toISOString();
+            processed[key] = val.toISOString();
           }
         } else if (fld.type === 'dateRange' && Array.isArray(val)) {
-          processed[fld.key] = val.map((d) => (dayjs.isDayjs(d) ? d.format('YYYY-MM-DD') : d));
+          processed[key] = val.map((d) => (dayjs.isDayjs(d) ? d.format('YYYY-MM-DD') : d));
         }
       });
 
@@ -137,7 +159,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
     // Required
     if (field.required) {
-      const fieldLabel = field.label || field.key;
+      const fieldLabel = field.label || field.name || field.key || 'Trường này';
       rules.push({ required: true, whitespace: true, message: `${fieldLabel} bắt buộc nhập` });
     }
 
@@ -184,6 +206,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       return field.render(field, form);
     }
 
+    const fieldKey = getFormFieldKey(field);
     const placeholder = field.placeholder || `Nhập ${field.label?.toLowerCase() || ''}`;
 
     switch (field.type) {
@@ -193,7 +216,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             placeholder={placeholder}
             size="middle"
             autoComplete="new-password"
-            onBlur={handleInputBlur(field.key)}
+            onBlur={handleInputBlur(fieldKey)}
           />
         );
 
@@ -205,7 +228,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             allowClear
             size="middle"
             autoComplete="off"
-            onBlur={handleInputBlur(field.key)}
+            onBlur={handleInputBlur(fieldKey)}
           />
         );
 
@@ -252,7 +275,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             maxLength={field.textareaConfig?.maxLength || field.validation?.maxLength}
             showCount={field.textareaConfig?.showCount}
             autoComplete="off"
-            onBlur={handleInputBlur(field.key)}
+            onBlur={handleInputBlur(fieldKey)}
           />
         );
 
@@ -333,9 +356,42 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       case 'radio':
         return <Radio.Group options={field.options} />;
 
+      case 'segmented':
+        return (
+          <Segmented
+            options={
+              field.segmentedOptions ||
+              (field.options?.map((o) => ({ label: o.label, value: o.value })) || [])
+            }
+            block
+            size="middle"
+          />
+        );
+
       case 'switch':
       case 'toggle':
         return <Switch />;
+
+      case 'rate':
+        return (
+          <Rate
+            count={field.rateConfig?.count || 5}
+            allowHalf={field.rateConfig?.allowHalf}
+            allowClear={field.rateConfig?.allowClear !== false}
+          />
+        );
+
+      case 'treeSelect':
+        return (
+          <TreeSelect
+            treeData={field.treeData || []}
+            placeholder={placeholder}
+            allowClear
+            showSearch
+            style={{ width: '100%' }}
+            size="middle"
+          />
+        );
 
       case 'file':
         return (
@@ -362,7 +418,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             allowClear
             size="middle"
             autoComplete="off"
-            onBlur={handleInputBlur(field.key)}
+            onBlur={handleInputBlur(fieldKey)}
           />
         );
     }
@@ -373,10 +429,12 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
     return (
       <Row gutter={[16, 0]}>
         {fields.map((field) => {
+          const fieldKey = getFormFieldKey(field);
+
           // Section Title / Divider
           if (field.type === 'title' || field.type === 'divider') {
             return (
-              <Col key={field.key} span={24}>
+              <Col key={fieldKey || Math.random().toString()} span={24}>
                 <div
                   style={{
                     paddingTop: 14,
@@ -399,16 +457,20 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             );
           }
 
-          const span = field.colSpan || (field.type === 'textarea' || field.type === 'file' ? 24 : 12);
+          const span = getFormFieldSpan(field);
           const rules = buildRules(field);
 
           return (
-            <Col key={field.key} span={span} xs={24} sm={span}>
+            <Col key={fieldKey} span={span} xs={24} sm={span}>
               <Form.Item
-                name={field.key}
+                name={fieldKey}
                 label={field.type !== 'checkbox' ? field.label : undefined}
                 required={Boolean(field.required)}
-                valuePropName={field.type === 'checkbox' || field.type === 'switch' || field.type === 'toggle' ? 'checked' : 'value'}
+                valuePropName={
+                  field.type === 'checkbox' || field.type === 'switch' || field.type === 'toggle'
+                    ? 'checked'
+                    : 'value'
+                }
                 rules={rules}
                 extra={field.description}
                 style={{ marginBottom: 16 }}

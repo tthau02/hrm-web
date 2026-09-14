@@ -11,6 +11,7 @@ import {
   FilterBar,
   CommonTable,
   notify,
+  useCrudModal,
 } from '@/components/common';
 import type { CommonTableColumn } from '@/components/common';
 import {
@@ -32,12 +33,20 @@ export const EmployeeListPage: React.FC = () => {
   const [departmentId, setDepartmentId] = useState<string>('all');
   const [status, setStatus] = useState<EmployeeStatus | 'all'>('all');
 
-  // Sidebar states
-  const [viewSidebarOpen, setViewSidebarOpen] = useState(false);
-  const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
-
-  const [formSidebarOpen, setFormSidebarOpen] = useState(false);
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  // Unified CRUD Modal & Drawer State
+  const {
+    viewOpen: viewSidebarOpen,
+    selectedRecord: viewingEmployee,
+    handleOpenView: handleViewEmployee,
+    handleCloseView: handleCloseViewSidebar,
+    formOpen: formSidebarOpen,
+    editingRecord: editingEmployee,
+    handleOpenAdd,
+    handleOpenEdit,
+    handleCloseForm: handleCloseFormSidebar,
+    handleNavigate,
+    syncUpdatedRecord,
+  } = useCrudModal<Employee>();
 
   // TanStack Query
   const {
@@ -58,22 +67,6 @@ export const EmployeeListPage: React.FC = () => {
   const employees = empResponse?.data || [];
   const departments = useMemo(() => deptResponse?.data || [], [deptResponse?.data]);
 
-  // Modal / Sidebar Handlers
-  const handleOpenAdd = () => {
-    setEditingEmployee(null);
-    setFormSidebarOpen(true);
-  };
-
-  const handleOpenEdit = (employee: Employee) => {
-    setEditingEmployee(employee);
-    setFormSidebarOpen(true);
-  };
-
-  const handleViewEmployee = (employee: Employee) => {
-    setViewingEmployee(employee);
-    setViewSidebarOpen(true);
-  };
-
   const handleFormSubmit = async (formData: any) => {
     const matchedDept = departments.find((d) => d.id === formData.departmentId);
     const payload = {
@@ -86,24 +79,21 @@ export const EmployeeListPage: React.FC = () => {
         id: editingEmployee.id,
         data: payload,
       });
-      // Sync currently viewed employee if updated
-      if (viewingEmployee?.id === editingEmployee.id) {
-        setViewingEmployee((prev) => (prev ? { ...prev, ...payload } : null));
-      }
+      syncUpdatedRecord(payload, 'id');
     } else {
       await createMutation.mutateAsync(payload);
     }
-    setFormSidebarOpen(false);
+    handleCloseFormSidebar();
   };
 
   const handleDelete = useCallback(
     (id: string) => {
       deleteMutation.mutate(id);
       if (viewingEmployee?.id === id) {
-        setViewSidebarOpen(false);
+        handleCloseViewSidebar();
       }
     },
-    [deleteMutation, viewingEmployee?.id]
+    [deleteMutation, viewingEmployee?.id, handleCloseViewSidebar]
   );
 
   // Table Columns
@@ -113,6 +103,7 @@ export const EmployeeListPage: React.FC = () => {
         title: 'Mã NV & Họ tên',
         key: 'name',
         width: 280,
+        action: (record) => handleViewEmployee(record),
         renderUser: (record) => ({
           avatar: record.avatar,
           name: record.fullName,
@@ -132,38 +123,34 @@ export const EmployeeListPage: React.FC = () => {
       {
         title: 'Số điện thoại',
         dataIndex: 'phone',
-        key: 'phone',
         width: 150,
-        ellipsis: true,
-        sorter: (a, b) => a.phone.localeCompare(b.phone),
+        mono: true,
+        allowSort: true,
       },
       {
         title: 'Mức lương cơ bản',
         dataIndex: 'salary',
-        key: 'salary',
+        type: 'money',
         width: 160,
-        align: 'right',
-        sorter: (a, b) => a.salary - b.salary,
-        renderCurrency: true,
+        bold: true,
+        allowSort: true,
       },
       {
         title: 'Ngày vào làm',
         dataIndex: 'joinDate',
-        key: 'joinDate',
+        type: 'date',
         width: 140,
-        align: 'center',
-        renderDate: true,
+        allowSort: true,
       },
       {
         title: 'Trạng thái',
         dataIndex: 'status',
-        key: 'status',
+        type: 'status',
         width: 140,
-        align: 'center',
-        renderStatus: true,
+        allowSort: true,
       },
     ],
-    []
+    [handleViewEmployee]
   );
 
   return (
@@ -171,31 +158,29 @@ export const EmployeeListPage: React.FC = () => {
       {/* 1. Page Header */}
       <PageHeader
         title="Quản lý Nhân viên"
-        actions={[
+        primaryAction={{
+          key: 'add-employee',
+          label: 'Thêm nhân viên mới',
+          icon: <UserAddOutlined />,
+          onClick: handleOpenAdd,
+        }}
+        secondaryActions={[
           {
             key: 'export-excel',
             label: 'Xuất Excel',
             icon: <ExportOutlined />,
-            variant: 'secondary',
             onClick: () =>
               notify.success({
                 title: 'Xuất Excel thành công',
                 description: 'Dữ liệu danh sách nhân viên đã được trích xuất thành tệp Excel.',
               }),
           },
-          {
-            key: 'add-employee',
-            label: 'Thêm nhân viên mới',
-            icon: <UserAddOutlined />,
-            variant: 'primary',
-            onClick: handleOpenAdd,
-          },
         ]}
       />
 
       {/* 2. Filter Bar */}
       <FilterBar
-        items={[
+        fields={[
           {
             name: 'search',
             type: 'search',
@@ -268,32 +253,34 @@ export const EmployeeListPage: React.FC = () => {
             icon: <DeleteOutlined />,
             danger: true,
             confirm: {
-              title: 'Xóa nhân viên',
-              description: `Bạn có chắc chắn muốn xóa nhân viên ${record.fullName}?`,
+              title: 'Xác nhận xóa',
+              description: `Bạn có chắc muốn xóa nhân sự ${record.fullName}? Thao tác này không thể hoàn tác.`,
+              okText: 'Xóa nhân viên',
+              cancelText: 'Hủy bỏ',
               onConfirm: () => handleDelete(record.id),
             },
           },
         ]}
       />
 
-      {/* 4. View Sidebar */}
+      {/* 4. Detail View Sidebar */}
       <EmployeeView
         open={viewSidebarOpen}
-        onClose={() => setViewSidebarOpen(false)}
+        onClose={handleCloseViewSidebar}
         employee={viewingEmployee}
         employees={employees}
         onEdit={(emp) => {
-          setViewSidebarOpen(false);
+          handleCloseViewSidebar();
           handleOpenEdit(emp);
         }}
         onDelete={handleDelete}
-        onNavigate={(idx) => setViewingEmployee(employees[idx])}
+        onNavigate={(idx) => handleNavigate(idx, employees)}
       />
 
       {/* 5. Create or Update Sidebar */}
       <EmployeeCreateOrUpdate
         open={formSidebarOpen}
-        onClose={() => setFormSidebarOpen(false)}
+        onClose={handleCloseFormSidebar}
         employee={editingEmployee}
         departments={departments}
         onSubmit={handleFormSubmit}

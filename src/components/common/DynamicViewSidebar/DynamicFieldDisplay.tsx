@@ -283,15 +283,19 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
                   </div>
                 )}
                 <Row gutter={[12, 10]}>
-                  {field.arrayConfig?.fields.map((subField) => (
-                    <Col key={subField.key} span={subField.colSpan || 24}>
-                      <DynamicFieldDisplay
-                        field={subField}
-                        value={item[subField.key]}
-                        data={item}
-                      />
-                    </Col>
-                  ))}
+                  {field.arrayConfig?.fields.map((subField, subIdx) => {
+                    const subKey = (subField.name || subField.key || `sub-${subIdx}`).trim();
+                    const subSpan = subField.span ?? subField.colSpan ?? 24;
+                    return (
+                      <Col key={subKey} span={subSpan}>
+                        <DynamicFieldDisplay
+                          field={subField}
+                          value={item[subKey]}
+                          data={item}
+                        />
+                      </Col>
+                    );
+                  })}
                 </Row>
               </Card>
             ))}

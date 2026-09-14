@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 const { Paragraph } = Typography;
 
 export interface BreadcrumbItem {
-  title: string;
+  title?: string;
+  label?: string; // Alias for title
   path?: string;
 }
 
@@ -30,6 +31,8 @@ export interface PageHeaderProps {
   subtitle?: React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
   actions?: HeaderActionItem[];
+  primaryAction?: HeaderActionItem;
+  secondaryActions?: HeaderActionItem[];
   extra?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -46,12 +49,29 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   breadcrumbs,
   actions = [],
+  primaryAction,
+  secondaryActions,
   extra,
   className = '',
   style,
   titleSize = 20,
 }) => {
   const { token } = antdTheme.useToken();
+
+  // Combine actions: secondaryActions, actions, and primaryAction (prominent on the right)
+  const resolvedPrimary: HeaderActionItem | undefined = primaryAction
+    ? {
+        ...primaryAction,
+        variant: primaryAction.variant || 'primary',
+        type: primaryAction.type || 'primary',
+      }
+    : undefined;
+
+  const allActions: HeaderActionItem[] = [
+    ...(secondaryActions || []),
+    ...actions,
+    ...(resolvedPrimary ? [resolvedPrimary] : []),
+  ];
 
   // Render an individual action button from configuration object
   const renderAction = (action: HeaderActionItem, index: number) => {
@@ -112,17 +132,20 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 </Link>
               ),
             },
-            ...breadcrumbs.map((b) => ({
-              title: b.path ? (
-                <Link to={b.path} style={{ color: token.colorTextSecondary }}>
-                  {b.title}
-                </Link>
-              ) : (
-                <span style={{ color: token.colorTextHeading, fontWeight: 500 }}>
-                  {b.title}
-                </span>
-              ),
-            })),
+            ...breadcrumbs.map((b) => {
+              const labelText = b.title || b.label || '';
+              return {
+                title: b.path ? (
+                  <Link to={b.path} style={{ color: token.colorTextSecondary }}>
+                    {labelText}
+                  </Link>
+                ) : (
+                  <span style={{ color: token.colorTextHeading, fontWeight: 500 }}>
+                    {labelText}
+                  </span>
+                ),
+              };
+            }),
           ]}
         />
       )}
@@ -179,10 +202,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </div>
 
         {/* Right: Action Buttons (Object config or Extra ReactNode) */}
-        {(actions.length > 0 || extra) && (
+        {(allActions.length > 0 || extra) && (
           <div className="common-page-header-actions">
             <Space size="middle" wrap>
-              {actions.map((act, idx) => renderAction(act, idx))}
+              {allActions.map((act, idx) => renderAction(act, idx))}
               {extra}
             </Space>
           </div>

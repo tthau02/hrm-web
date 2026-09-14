@@ -50,13 +50,14 @@ hrm-web/
 │   ├── api/                             # Axios client, endpoints, mockData
 │   ├── components/
 │   │   ├── common/                      # BỘ COMMON COMPONENTS CHỦ ĐẠO
-│   │   │   ├── CommonTable.tsx          # Bảng dữ liệu thông minh + action dropdown
-│   │   │   ├── FilterBar.tsx            # Thanh lọc dữ liệu config-driven
+│   │   │   ├── CommonTable/             # Bảng dữ liệu thông minh + action dropdown
+│   │   │   ├── FilterBar/               # Thanh lọc dữ liệu config-driven & advanced filters
+│   │   │   ├── ChangeHistory/           # Lịch sử thay đổi thông tin / Audit log
+│   │   │   ├── DynamicViewSidebar/      # Sidebar xem chi tiết kèm phân trang record
+│   │   │   ├── DynamicFormSidebar/      # Sidebar thêm mới / chỉnh sửa dữ liệu
 │   │   │   ├── PageHeader.tsx           # Tiêu đề trang + breadcrumbs + CTAs
 │   │   │   ├── StatCard.tsx             # Thẻ chỉ số KPI / thống kê
 │   │   │   ├── StatusBadge.tsx          # Huy hiệu trạng thái (Active, Probation...)
-│   │   │   ├── DynamicViewSidebar/      # Sidebar xem chi tiết kèm phân trang record
-│   │   │   ├── DynamicFormSidebar/      # Sidebar thêm mới / chỉnh sửa dữ liệu
 │   │   │   └── Notification.tsx         # Thông báo bottomRight thay thế window.alert
 │   ├── features/                        # Các module tính năng (employees, departments...)
 │   ├── hooks/                           # Custom hooks (useHrmQuery...)
@@ -431,6 +432,81 @@ api.open({
 
 ---
 
+### 4.7 `useCrudModal<T>` (Hook quản lý trạng thái CRUD thông minh)
+
+Đóng gói toàn bộ logic quản lý drawer xem chi tiết, drawer thêm/sửa, điều hướng bản ghi và đồng bộ dữ liệu:
+
+```tsx
+import { useCrudModal } from '@/components/common';
+
+const {
+  viewOpen,
+  selectedRecord,
+  handleOpenView,
+  handleCloseView,
+  formOpen,
+  editingRecord,
+  isEdit,
+  handleOpenAdd,
+  handleOpenEdit,
+  handleCloseForm,
+  handleNavigate,
+  syncUpdatedRecord,
+} = useCrudModal<Employee>();
+```
+
+---
+
+### 4.8 `ChangeHistory` (Lịch sử thay đổi thông tin / Audit Log)
+
+Hiển thị nhật ký thay đổi dữ liệu trực quan khi người dùng cập nhật hồ sơ, phòng ban, phân quyền:
+- Hỗ trợ cả 2 prop: `data` hoặc `listHistoryChanges` (tương thích mẫu Angular cũ).
+- Tự động nhận diện kiểu dữ liệu: `text`, `date`, `datetime`, `money`, `status`, `image`.
+- Giá trị cũ (`oldValue`) hiển thị nền đỏ nhẹ, giá trị mới (`newValue`) nền xanh lá nhẹ kèm mũi tên `→`.
+- Hỗ trợ 2 chế độ hiển thị: `mode="card"` (bảng thẻ) hoặc `mode="timeline"` (dòng thời gian).
+- Tích hợp tìm kiếm nhanh theo trường, người sửa hoặc giá trị thay đổi.
+
+```tsx
+import { ChangeHistory, type ChangeHistoryItem } from '@/components/common';
+
+const historyData: ChangeHistoryItem[] = [
+  {
+    changeTime: '2026-09-14T10:30:00Z',
+    userName: 'Nguyễn Văn Quản Trị',
+    sourceName: 'Web Portal',
+    actionTitle: 'Cập nhật hợp đồng và chức vụ',
+    changeDetails: [
+      {
+        propertyName: 'Chức vụ',
+        oldValue: 'Nhân viên Kinh doanh',
+        newValue: 'Trưởng nhóm Kinh doanh',
+      },
+      {
+        propertyName: 'Mức lương cơ bản',
+        oldValue: 12000000,
+        newValue: 18000000,
+        type: 'money',
+      },
+      {
+        propertyName: 'Trạng thái',
+        oldValue: 'probation',
+        newValue: 'active',
+        type: 'status',
+      },
+    ],
+  },
+];
+
+<ChangeHistory
+  data={historyData}
+  mode="card"
+  searchable={true}
+  maxHeight={400}
+/>
+```
+
+---
+
 ## 5. Checklist khi AI Agent code tính năng mới
 
 - [ ] Đã đọc `DESIGN.md` để áp dụng màu Cursor Orange `#f54e00`, viền 1px hairline, không dùng drop shadow nhòe.
@@ -438,6 +514,7 @@ api.open({
 - [ ] Bộ lọc dùng `FilterBar`.
 - [ ] Xem chi tiết dùng `DynamicViewSidebar` thay vì modal thông thường.
 - [ ] Thêm / Sửa dùng `DynamicFormSidebar`.
+- [ ] Lịch sử cập nhật / nhật ký kiểm toán dùng `ChangeHistory`.
 - [ ] Thông báo phản hồi dùng `notify` (`bottomRight`), **tuyệt đối không dùng `window.alert`**.
 - [ ] Kiểm tra cả Light Mode và Dark Mode sau khi hoàn thành.
 - [ ] Chạy `npm run lint` và `npm run build` để kiểm tra TypeScript và cú pháp.

@@ -18,8 +18,11 @@ export type FormFieldType =
   | 'dateRange'
   | 'checkbox'
   | 'radio'
+  | 'segmented'
   | 'switch'
   | 'toggle'
+  | 'rate'
+  | 'treeSelect'
   | 'file'
   | 'title'
   | 'divider'
@@ -32,12 +35,14 @@ export interface FormFieldOption {
 }
 
 export interface FormFieldConfig<T = any> {
-  key: string;
+  key?: string;
+  name?: string; // Alias for key
   label?: string;
   type?: FormFieldType;
   required?: boolean | string;
   placeholder?: string;
   colSpan?: number; // Out of 24 (default 12 or 24)
+  span?: number; // Alias for colSpan
   defaultValue?: any;
   disabled?: boolean | ((values: T) => boolean);
   hidden?: boolean | ((values: T) => boolean);
@@ -72,6 +77,13 @@ export interface FormFieldConfig<T = any> {
     allowClear?: boolean;
     mode?: 'multiple' | 'tags';
   };
+  treeData?: any[];
+  segmentedOptions?: (string | number | { label: string; value: any; icon?: React.ReactNode })[];
+  rateConfig?: {
+    count?: number;
+    allowHalf?: boolean;
+    allowClear?: boolean;
+  };
   dateConfig?: {
     format?: string;
     showTime?: boolean;
@@ -101,6 +113,7 @@ export interface DynamicFormConfig<T = any> {
   fields?: FormFieldConfig<T>[];
   tabs?: FormTabConfig<T>[];
   data?: T | null;
+  initialValues?: T | null; // Alias for data
   submitText?: string;
   editSubmitText?: string;
   cancelText?: string;
@@ -114,6 +127,7 @@ export interface DynamicFormSidebarProps<T = any> {
   onClose: () => void;
   onSubmit: (values: any) => Promise<void> | void;
   data?: T | null;
+  initialValues?: T | null; // Alias for data
   saving?: boolean;
   width?: number | string;
   placement?: 'right' | 'left';
