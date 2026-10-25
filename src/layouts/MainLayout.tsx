@@ -245,7 +245,7 @@ export const MainLayout: React.FC = () => {
           <Menu
             mode="inline"
             selectedKeys={[currentKey]}
-            openKeys={openKeys}
+            openKeys={collapsedSidebar ? [] : openKeys}
             onOpenChange={setManuallyOpenKeys}
             items={menuItems}
             onClick={handleMenuClick}
