@@ -170,7 +170,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               style={{
                 margin: 0,
                 fontSize: titleSize,
-                fontWeight: 500,
+                fontWeight: 600,
                 color: token.colorTextHeading,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.3,

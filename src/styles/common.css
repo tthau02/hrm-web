@@ -11,7 +11,8 @@
   border-color: #f54e00 !important;
   color: #ffffff !important;
   border-radius: 8px !important;
-  font-weight: 500 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   height: 40px !important;
   padding: 0 18px !important;
   box-shadow: none !important;
@@ -28,6 +29,7 @@
 
 .btn-hairline-secondary {
   border-radius: 8px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   height: 40px !important;
   padding: 0 16px !important;
