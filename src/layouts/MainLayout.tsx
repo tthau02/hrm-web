@@ -6,8 +6,6 @@ import {
   Avatar,
   Dropdown,
   Space,
-  Badge,
-  Typography,
   Switch,
   Drawer,
   theme as antdTheme,
@@ -17,17 +15,21 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MenuOutlined,
-  BellOutlined,
   UserOutlined,
   LogoutOutlined,
   SunOutlined,
   MoonOutlined,
+  GlobalOutlined,
+  DownOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { toggleSidebar, setSidebarCollapsed, toggleTheme } from '@/store/slices/themeSlice';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation, type SupportedLocale } from '@/locales';
+import type { User } from '@/types';
+import { HeaderNotification } from '@/components/common/HeaderNotification';
 import {
   appNavigations,
   filterNavItemsByRole,
@@ -35,7 +37,103 @@ import {
 } from '@/routes/appNavigation';
 
 const { Header, Sider, Content } = Layout;
-const { Text } = Typography;
+
+const HeaderThemeSwitcher: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
+  const { t } = useTranslation();
+
+  return (
+    <div className="theme-toggle-pill" title={t.header.theme}>
+      <SunOutlined className={!isDarkMode ? 'is-active' : ''} />
+      <Switch
+        size="small"
+        checked={isDarkMode}
+        onChange={() => dispatch(toggleTheme())}
+        aria-label={t.header.theme}
+      />
+      <MoonOutlined className={isDarkMode ? 'is-active' : ''} />
+    </div>
+  );
+};
+
+const HeaderLanguageDropdown: React.FC = () => {
+  const { locale, setLocale, t } = useTranslation();
+  const items: MenuProps['items'] = [
+    { key: 'vi', label: 'Tiếng Việt' },
+    { key: 'en', label: 'English' },
+  ];
+
+  return (
+    <Dropdown
+      menu={{
+        items,
+        selectedKeys: [locale],
+        onClick: ({ key }) => setLocale(key as SupportedLocale),
+      }}
+      trigger={['click']}
+      placement="bottomRight"
+    >
+      <Button
+        className="header-language-btn"
+        aria-label={t.header.language}
+        title={t.header.language}
+      >
+        <GlobalOutlined />
+        <span>{locale.toUpperCase()}</span>
+        <DownOutlined className="header-language-caret" />
+      </Button>
+    </Dropdown>
+  );
+};
+
+type HeaderProfileMenuProps = {
+  user: User | null;
+  onLogout: () => void;
+};
+
+const HeaderProfileMenu: React.FC<HeaderProfileMenuProps> = ({ user, onLogout }) => {
+  const { t } = useTranslation();
+  const { token } = antdTheme.useToken();
+  const items: MenuProps['items'] = [
+    {
+      key: 'profile',
+      label: (
+        <div className="header-profile-info">
+          <strong>{user?.name || t.header.administrator}</strong>
+          {user?.email && <span>{user.email}</span>}
+        </div>
+      ),
+      disabled: true,
+    },
+    { type: 'divider' },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: t.header.logout,
+      danger: true,
+      onClick: onLogout,
+    },
+  ];
+
+  return (
+    <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
+      <button
+        type="button"
+        className="header-avatar-trigger"
+        aria-label={t.header.profile}
+        title={t.header.profile}
+      >
+        <Avatar
+          src={user?.avatar}
+          icon={<UserOutlined />}
+          size={32}
+          style={{ backgroundColor: token.colorPrimary }}
+        />
+      </button>
+    </Dropdown>
+  );
+};
 
 export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -43,12 +141,14 @@ export const MainLayout: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isMobile, isTablet } = useResponsive();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [manuallyOpenKeys, setManuallyOpenKeys] = useState<string[]>([]);
 
   // Active Ant Design design tokens
   const { token } = antdTheme.useToken();
 
   const user = useAppSelector((state) => state.auth.user);
   const { collapsedSidebar, isDarkMode } = useAppSelector((state) => state.theme);
+  const { t } = useTranslation();
 
   // Auto-collapse sidebar on tablet viewports to maximize workspace breathing room
   useEffect(() => {
@@ -64,17 +164,16 @@ export const MainLayout: React.FC = () => {
   );
 
   const menuItems = useMemo(
-    () => transformToAntdMenuItems(filteredNavItems),
-    [filteredNavItems]
+    () => transformToAntdMenuItems(filteredNavItems, t.navigation),
+    [filteredNavItems, t.navigation]
   );
 
   // Determine current active and open keys
   const currentKey = location.pathname;
-  const defaultOpenKeys = useMemo(() => {
-    if (currentKey.startsWith('/employees')) return ['/employees-group'];
-    if (currentKey.startsWith('/attendance')) return ['/attendance-group'];
-    return [];
-  }, [currentKey]);
+  const openKeys = useMemo(() => {
+    const routeKeys = currentKey.startsWith('/employees') ? ['/employees-group'] : [];
+    return [...new Set([...manuallyOpenKeys, ...routeKeys])];
+  }, [currentKey, manuallyOpenKeys]);
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     if (isMobile) {
@@ -99,30 +198,6 @@ export const MainLayout: React.FC = () => {
     dispatch(logout());
     navigate('/login');
   };
-
-  const userMenuItems: MenuProps['items'] = [
-    {
-      key: 'user-info',
-      label: (
-        <div style={{ padding: '6px 8px' }}>
-          <div style={{ fontWeight: 600, color: token.colorTextHeading, fontSize: 13 }}>
-            {user?.name || 'Quản trị viên'}
-          </div>
-          <div style={{ fontSize: 12, color: token.colorTextSecondary, marginTop: 2 }}>
-            {user?.email || 'admin@hrm.vn'}
-          </div>
-        </div>
-      ),
-      disabled: true,
-    },
-    { type: 'divider' },
-    {
-      key: 'logout',
-      icon: <LogoutOutlined style={{ color: '#cf2d56' }} />,
-      label: <span style={{ color: '#cf2d56', fontWeight: 500 }}>Đăng xuất</span>,
-      onClick: handleLogout,
-    },
-  ];
 
   return (
     <Layout style={{ minHeight: '100vh', background: token.colorBgLayout }}>
@@ -170,7 +245,8 @@ export const MainLayout: React.FC = () => {
           <Menu
             mode="inline"
             selectedKeys={[currentKey]}
-            defaultOpenKeys={defaultOpenKeys}
+            openKeys={openKeys}
+            onOpenChange={setManuallyOpenKeys}
             items={menuItems}
             onClick={handleMenuClick}
             className="hrm-sidebar-menu"
@@ -213,101 +289,17 @@ export const MainLayout: React.FC = () => {
                 background: token.colorBgContainer,
                 border: `1px solid ${token.colorBorderSecondary}`,
               }}
-              title={isMobile ? 'Mở menu' : 'Đóng / Mở menu sidebar'}
+              title={isMobile ? t.header.openMenu : t.header.closeMenu}
+              aria-label={isMobile ? t.header.openMenu : t.header.closeMenu}
             />
           </div>
 
-          {/* Right: Theme Switch, Notifications & User profile */}
-          <Space size={isMobile ? 'small' : 'middle'} align="center">
-            {/* Theme Toggle Switch with Sun/Moon indicator */}
-            <div
-              className="theme-toggle-pill"
-              style={{
-                background: isDarkMode ? '#262626' : '#f5f5f4',
-                border: `1px solid ${token.colorBorderSecondary}`,
-              }}
-            >
-              <SunOutlined
-                style={{
-                  fontSize: 13,
-                  color: isDarkMode ? token.colorTextSecondary : '#f54e00',
-                  transition: 'color 0.2s ease',
-                }}
-              />
-              <Switch
-                size="small"
-                checked={isDarkMode}
-                onChange={() => dispatch(toggleTheme())}
-                style={{
-                  backgroundColor: isDarkMode ? '#f54e00' : '#bfbfbf',
-                }}
-              />
-              <MoonOutlined
-                style={{
-                  fontSize: 12,
-                  color: isDarkMode ? '#f54e00' : token.colorTextSecondary,
-                  transition: 'color 0.2s ease',
-                }}
-              />
-            </div>
-
-            {/* Notification Badge */}
-            <Badge
-              count={3}
-              size="small"
-              style={{
-                backgroundColor: '#f54e00',
-                boxShadow: 'none',
-                fontWeight: 600,
-                fontSize: 10,
-              }}
-            >
-              <Button
-                type="text"
-                shape="circle"
-                icon={<BellOutlined style={{ fontSize: 17, color: token.colorTextHeading }} />}
-                className="btn-icon-hairline"
-                style={{
-                  background: token.colorBgContainer,
-                  border: `1px solid ${token.colorBorderSecondary}`,
-                }}
-              />
-            </Badge>
-
-            {/* Hairline Divider */}
-            <div
-              className="header-divider-line"
-              style={{ background: token.colorBorderSecondary }}
-            />
-
-            {/* User Profile Dropdown */}
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <div
-                className="hrm-user-chip"
-                style={{
-                  background: token.colorBgContainer,
-                  border: `1px solid ${token.colorBorderSecondary}`,
-                }}
-              >
-                <Avatar
-                  src={user?.avatar}
-                  icon={<UserOutlined />}
-                  size={28}
-                  style={{
-                    backgroundColor: isDarkMode ? '#2b2b2b' : '#f54e00',
-                    border: `1px solid ${token.colorBorderSecondary}`,
-                  }}
-                />
-                <div className="hrm-user-chip-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-                  <Text style={{ fontSize: 13, fontWeight: 500, color: token.colorTextHeading }}>
-                    {user?.name || 'Nguyễn Văn Quản Trị'}
-                  </Text>
-                  <Text style={{ fontSize: 11, color: token.colorTextSecondary }}>
-                    {user?.role === 'admin' ? 'Quản trị viên' : 'HR Manager'}
-                  </Text>
-                </div>
-              </div>
-            </Dropdown>
+          {/* Header controls are separate components so each can grow independently. */}
+          <Space className="hrm-header-actions" size={isMobile ? 6 : 10} align="center">
+            <HeaderNotification />
+            <HeaderLanguageDropdown />
+            <HeaderThemeSwitcher />
+            <HeaderProfileMenu user={user} onLogout={handleLogout} />
           </Space>
         </Header>
 
@@ -346,7 +338,8 @@ export const MainLayout: React.FC = () => {
             <Menu
               mode="inline"
               selectedKeys={[currentKey]}
-              defaultOpenKeys={defaultOpenKeys}
+              openKeys={openKeys}
+              onOpenChange={setManuallyOpenKeys}
               items={menuItems}
               onClick={handleMenuClick}
               className="hrm-sidebar-menu"

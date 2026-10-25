@@ -30,6 +30,7 @@ import dayjs from 'dayjs';
 import type { Rule } from 'antd/es/form';
 import type { DynamicFormSidebarProps, FormFieldConfig } from './types';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation } from '@/locales';
 
 // Safe helper to extract field name / key alias
 export const getFormFieldKey = (field: FormFieldConfig): string => {
@@ -58,6 +59,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   const [form] = Form.useForm();
   const { token } = antdTheme.useToken();
   const { isMobile, screenWidth } = useResponsive();
+  const { t, formatMessage } = useTranslation();
 
   // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
   const responsiveWidth = useMemo(() => {
@@ -159,28 +161,38 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
 
     // Required
     if (field.required) {
-      const fieldLabel = field.label || field.name || field.key || 'Trường này';
-      rules.push({ required: true, whitespace: true, message: `${fieldLabel} bắt buộc nhập` });
+      const fieldLabel = field.label || field.name || field.key || t.form.defaultField;
+      rules.push({
+        required: true,
+        whitespace: true,
+        message: formatMessage(t.form.required, { field: fieldLabel }),
+      });
     }
 
     // Type email
     if (field.type === 'email') {
-      rules.push({ type: 'email', message: 'Địa chỉ email không hợp lệ' });
+      rules.push({ type: 'email', message: t.form.invalidEmail });
     }
 
     // Min / Max length
     if (field.validation?.minLength) {
-      rules.push({ min: field.validation.minLength, message: `Tối thiểu ${field.validation.minLength} ký tự` });
+      rules.push({
+        min: field.validation.minLength,
+        message: formatMessage(t.form.minLength, { min: field.validation.minLength }),
+      });
     }
     if (field.validation?.maxLength) {
-      rules.push({ max: field.validation.maxLength, message: `Tối đa ${field.validation.maxLength} ký tự` });
+      rules.push({
+        max: field.validation.maxLength,
+        message: formatMessage(t.form.maxLength, { max: field.validation.maxLength }),
+      });
     }
 
     // Pattern
     if (field.validation?.pattern) {
       rules.push({
         pattern: field.validation.pattern,
-        message: field.validation.message || 'Dữ liệu không đúng định dạng yêu cầu',
+        message: field.validation.message || t.form.invalidFormat,
       });
     }
 
@@ -207,7 +219,9 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
     }
 
     const fieldKey = getFormFieldKey(field);
-    const placeholder = field.placeholder || `Nhập ${field.label?.toLowerCase() || ''}`;
+    const placeholder =
+      field.placeholder ||
+      formatMessage(t.form.inputFieldPlaceholder, { field: field.label?.toLowerCase() || '' });
 
     switch (field.type) {
       case 'password':
@@ -405,7 +419,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
               <InboxOutlined style={{ color: token.colorPrimary }} />
             </p>
             <p className="ant-upload-text" style={{ fontSize: 13 }}>
-              Nhấp hoặc kéo thả tệp vào khu vực này để tải lên
+              {t.form.dropzoneText}
             </p>
           </Upload.Dragger>
         );
@@ -485,7 +499,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   };
 
   // Header Title
-  const title = isEdit ? (config.editTitle || 'Cập nhật thông tin') : (config.title || 'Tạo mới thông tin');
+  const title = isEdit ? (config.editTitle || t.form.editTitle) : (config.title || t.form.createTitle);
   const subtitle = typeof config.subtitle === 'function' ? config.subtitle(activeData) : config.subtitle;
 
   const headerNode = (
@@ -528,7 +542,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
         icon={config.cancelIcon ?? <CloseOutlined style={{ fontSize: 13 }} />}
         style={{ minWidth: 110, height: 40, borderRadius: 8 }}
       >
-        {config.cancelText || 'Hủy bỏ'}
+        {config.cancelText || t.form.cancel}
       </Button>
 
       {extraFooter}
@@ -548,7 +562,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
         className="btn-cursor-primary"
         style={{ minWidth: 130, height: 40 }}
       >
-        {isEdit ? (config.editSubmitText || 'Lưu thay đổi') : (config.submitText || 'Thêm mới')}
+        {isEdit ? (config.editSubmitText || t.form.submitEdit) : (config.submitText || t.form.submitCreate)}
       </Button>
     </div>
   );

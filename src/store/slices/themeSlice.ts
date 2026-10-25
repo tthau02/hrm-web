@@ -7,8 +7,16 @@ interface ThemeState {
   primaryColor: string;
 }
 
+const getInitialDarkMode = (): boolean => {
+  try {
+    return localStorage.getItem('hrm_dark_mode') === 'true';
+  } catch {
+    return false;
+  }
+};
+
 const initialState: ThemeState = {
-  isDarkMode: false,
+  isDarkMode: getInitialDarkMode(),
   collapsedSidebar: false,
   primaryColor: '#f54e00', // Cursor Orange from DESIGN.md
 };

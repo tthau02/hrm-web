@@ -20,6 +20,7 @@ import {
 import type { DynamicViewSidebarProps, ViewActionConfig, DynamicViewSection, ViewFieldConfig } from './types';
 import { DynamicFieldDisplay } from './DynamicFieldDisplay';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation } from '@/locales';
 
 export function DynamicViewSidebar<T = any>({
   config,
@@ -40,6 +41,7 @@ export function DynamicViewSidebar<T = any>({
 }: DynamicViewSidebarProps<T>) {
   const { token } = antdTheme.useToken();
   const { isMobile, screenWidth } = useResponsive();
+  const { t } = useTranslation();
   const activeData: T = (propData ?? config.data ?? ({} as T));
 
   // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
@@ -101,8 +103,8 @@ export function DynamicViewSidebar<T = any>({
         title: action.confirm.title,
         content: action.confirm.description,
         icon: <ExclamationCircleOutlined style={{ color: action.danger ? '#cf2d56' : token.colorPrimary }} />,
-        okText: action.confirm.okText || 'Xác nhận',
-        cancelText: action.confirm.cancelText || 'Hủy',
+        okText: action.confirm.okText || t.common.confirm,
+        cancelText: action.confirm.cancelText || t.common.cancel,
         okButtonProps: { danger: action.danger },
         onOk: () => action.onClick(activeData),
       });
@@ -113,7 +115,7 @@ export function DynamicViewSidebar<T = any>({
 
   // Header Title & Counter
   const renderHeader = () => {
-    const title = config.title || 'Chi tiết thông tin';
+    const title = config.title || t.view.detailTitle;
     const subtitle =
       typeof config.subtitle === 'function' ? config.subtitle(activeData) : config.subtitle;
 
@@ -161,7 +163,7 @@ export function DynamicViewSidebar<T = any>({
                 border: `1px solid ${token.colorBorderSecondary}`,
               }}
             >
-              <Tooltip title="Bản ghi trước (Phím ←)">
+              <Tooltip title={t.view.prevRecord}>
                 <Button
                   type="text"
                   size="small"
@@ -181,7 +183,7 @@ export function DynamicViewSidebar<T = any>({
               >
                 {currentIndex >= 0 ? currentIndex + 1 : 1}/{totalCount || navigationIds.length || 1}
               </span>
-              <Tooltip title="Bản ghi sau (Phím →)">
+              <Tooltip title={t.view.nextRecord}>
                 <Button
                   type="text"
                   size="small"
@@ -294,7 +296,7 @@ export function DynamicViewSidebar<T = any>({
         }}
       >
         <Button onClick={onClose} style={{ minWidth: 110, height: 40, borderRadius: 8 }}>
-          Đóng
+          {t.view.close}
         </Button>
 
         {visibleActions.map((act) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Breadcrumb, Button, Space, Typography, theme as antdTheme } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/locales';
 
 const { Paragraph } = Typography;
 
@@ -57,6 +58,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   titleSize = 20,
 }) => {
   const { token } = antdTheme.useToken();
+  const { t } = useTranslation();
 
   // Combine actions: secondaryActions, actions, and primaryAction (prominent on the right)
   const resolvedPrimary: HeaderActionItem | undefined = primaryAction
@@ -128,7 +130,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                   }}
                 >
                   <HomeOutlined style={{ marginRight: 4, fontSize: 11 }} />
-                  Trang chủ
+                  {t.common.home}
                 </Link>
               ),
             },

@@ -23,6 +23,7 @@ import dayjs from 'dayjs';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusBadge } from '../StatusBadge';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation } from '@/locales';
 import type {
   ChangeHistoryProps,
   ChangeHistoryItem,
@@ -86,15 +87,19 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
   mode = 'card',
   maxHeight,
   searchable = true,
-  searchPlaceholder = 'Tìm kiếm lịch sử theo trường, người sửa...',
-  emptyText = 'Chưa có lịch sử thay đổi nào',
+  searchPlaceholder,
+  emptyText,
   bordered = true,
   className = '',
   style,
 }) => {
   const { token } = antdTheme.useToken();
   const { isMobile } = useResponsive();
+  const { t, formatMessage } = useTranslation();
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const resolvedSearchPlaceholder = searchPlaceholder || t.history.searchPlaceholder;
+  const resolvedEmptyText = emptyText || t.history.emptyText;
 
   // Support both data and listHistoryChanges props
   const rawList: ChangeHistoryItem[] = useMemo(
@@ -150,7 +155,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
             fontSize: 12,
           }}
         >
-          {isNew ? '(Đã xóa)' : '(Trống)'}
+          {isNew ? t.common.deleted : t.common.empty}
         </span>
       );
     }
@@ -407,7 +412,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
               <UserOutlined style={{ fontSize: 12, color: token.colorTextTertiary }} />
             )}
             <span>
-              Người sửa: <strong style={{ color: token.colorTextHeading }}>{item.userName || 'Hệ thống'}</strong>
+              {t.history.modifier}: <strong style={{ color: token.colorTextHeading }}>{item.userName || t.common.system}</strong>
             </span>
           </div>
 
@@ -422,7 +427,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
           >
             {item.sourceIcon || <DesktopOutlined style={{ fontSize: 12, color: token.colorTextTertiary }} />}
             <span>
-              Nguồn: <strong style={{ color: token.colorTextHeading }}>{item.sourceName || 'Web Portal'}</strong>
+              {t.history.source}: <strong style={{ color: token.colorTextHeading }}>{item.sourceName || t.common.webPortal}</strong>
             </span>
           </div>
         </div>
@@ -449,9 +454,9 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
               justifyContent: 'space-between',
             }}
           >
-            <span>{item.actionTitle || 'Thông tin thay đổi:'}</span>
+            <span>{item.actionTitle || t.history.actionTitleDefault}</span>
             <span style={{ fontSize: 12, fontWeight: 400, color: token.colorTextTertiary }}>
-              {item.changeDetails.length} trường thay đổi
+              {formatMessage(t.history.changesCount, { count: item.changeDetails.length })}
             </span>
           </div>
 
@@ -504,7 +509,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
                 {dayjs(item.changeTime).format('HH:mm:ss DD/MM/YYYY')}
               </span>
               <span style={{ fontSize: 12.5, color: token.colorTextSecondary }}>
-                bởi <strong style={{ color: token.colorTextHeading }}>{item.userName || 'Hệ thống'}</strong>
+                {t.history.by} <strong style={{ color: token.colorTextHeading }}>{item.userName || t.common.system}</strong>
               </span>
               {item.sourceName && (
                 <Tag style={{ margin: 0 }}>{item.sourceName}</Tag>
@@ -563,18 +568,18 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
               color: token.colorTextHeading,
             }}
           >
-            {title || 'Lịch sử thay đổi thông tin'}
+            {title || t.history.title}
           </span>
           {rawList.length > 0 && (
             <Tag style={{ margin: 0, borderRadius: 10, fontSize: 11 }}>
-              {rawList.length} bản ghi
+              {formatMessage(t.history.recordsCount, { count: rawList.length })}
             </Tag>
           )}
         </div>
 
         {searchable && rawList.length > 0 && (
           <Input
-            placeholder={searchPlaceholder}
+            placeholder={resolvedSearchPlaceholder}
             prefix={<SearchOutlined style={{ color: token.colorTextSecondary }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -601,7 +606,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
               <Empty
                 description={
                   <span style={{ color: token.colorTextSecondary }}>
-                    {searchTerm ? 'Không tìm thấy lịch sử phù hợp với từ khóa' : emptyText}
+                    {searchTerm ? t.history.noMatchSearch : resolvedEmptyText}
                   </span>
                 }
                 image={Empty.PRESENTED_IMAGE_SIMPLE}

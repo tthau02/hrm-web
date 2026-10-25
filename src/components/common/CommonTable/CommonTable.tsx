@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import { StatusBadge } from '../StatusBadge';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation } from '@/locales';
 import type { CommonTableProps } from './types';
 
 // Safe nested value resolver
@@ -45,10 +46,10 @@ const getNestedValue = (obj: any, path?: any): any => {
 export function CommonTable<T extends object>({
   columns,
   actions,
-  actionColumnTitle = 'Thao tác',
+  actionColumnTitle,
   actionColumnWidth = 100,
   showIndexColumn = true,
-  indexColumnTitle = 'STT',
+  indexColumnTitle,
   indexColumnWidth = 65,
   fixedIndexColumn = true,
   fixedActionColumn = true,
@@ -65,6 +66,10 @@ export function CommonTable<T extends object>({
 }: CommonTableProps<T>) {
   const { token } = antdTheme.useToken();
   const { isMobile } = useResponsive();
+  const { t, formatMessage } = useTranslation();
+
+  const resolvedActionTitle = actionColumnTitle || t.table.action;
+  const resolvedIndexTitle = indexColumnTitle || t.table.index;
 
   // Track active page and size for accurate STT calculation across pagination changes
   const controlledCurrent = pagination && typeof pagination === 'object' ? pagination.current : undefined;
@@ -612,7 +617,7 @@ export function CommonTable<T extends object>({
     if (showIndexColumn) {
       cols.unshift({
         title: (
-          <span style={{ whiteSpace: 'nowrap' }}>{indexColumnTitle}</span>
+          <span style={{ whiteSpace: 'nowrap' }}>{resolvedIndexTitle}</span>
         ),
         key: '__stt__',
         align: 'center',
@@ -647,7 +652,7 @@ export function CommonTable<T extends object>({
     if (actions) {
       cols.push({
         title: (
-          <span style={{ whiteSpace: 'nowrap' }}>{actionColumnTitle}</span>
+          <span style={{ whiteSpace: 'nowrap' }}>{resolvedActionTitle}</span>
         ),
         key: '__actions__',
         align: 'center',
@@ -670,8 +675,8 @@ export function CommonTable<T extends object>({
                   title: act.confirm.title,
                   content: act.confirm.description,
                   icon: <ExclamationCircleOutlined style={{ color: '#cf2d56' }} />,
-                  okText: act.confirm.okText || 'Xác nhận',
-                  cancelText: act.confirm.cancelText || 'Hủy',
+                  okText: act.confirm.okText || t.common.confirm,
+                  cancelText: act.confirm.cancelText || t.common.cancel,
                   okButtonProps: { danger: act.danger },
                   onOk: () => {
                     act.confirm?.onConfirm();
@@ -695,7 +700,7 @@ export function CommonTable<T extends object>({
                   shape="circle"
                   className="common-table-action-btn"
                   icon={<MoreOutlined style={{ fontSize: 17 }} />}
-                  title="Thao tác"
+                  title={t.table.action}
                 />
               </Dropdown>
             </div>
@@ -708,10 +713,10 @@ export function CommonTable<T extends object>({
   }, [
     columns,
     actions,
-    actionColumnTitle,
+    resolvedActionTitle,
     actionColumnWidth,
     showIndexColumn,
-    indexColumnTitle,
+    resolvedIndexTitle,
     indexColumnWidth,
     fixedIndexColumn,
     fixedActionColumn,
@@ -719,6 +724,7 @@ export function CommonTable<T extends object>({
     currentPg,
     currentSize,
     token,
+    t,
   ]);
 
   // Row selection (checkbox / radio) support like common-table
@@ -791,7 +797,10 @@ export function CommonTable<T extends object>({
               pageSize: 10,
               size: isMobile ? 'small' : undefined,
               showSizeChanger: !isMobile,
-              showTotal: (total) => (isMobile ? `Tổng: ${total}` : `Tổng số ${total} bản ghi`),
+              showTotal: (total) =>
+                isMobile
+                  ? formatMessage(t.table.totalShort, { total })
+                  : formatMessage(t.table.totalRecords, { total }),
               style: { padding: isMobile ? '8px 12px 10px' : '0 16px 12px' },
               ...pagination,
             }

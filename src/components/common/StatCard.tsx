@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Typography, theme as antdTheme } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { useTranslation } from '@/locales';
 
 const { Text } = Typography;
 
@@ -28,6 +29,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   suffix,
 }) => {
   const { token } = antdTheme.useToken();
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -106,7 +108,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                 {trend.value}%
               </span>
               <Text style={{ fontSize: 12, color: token.colorTextSecondary }}>
-                {trend.text || 'so với tháng trước'}
+                {trend.text || t.common.comparedToLastMonth}
               </Text>
             </div>
           )}

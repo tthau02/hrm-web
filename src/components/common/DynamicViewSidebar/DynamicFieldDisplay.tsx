@@ -24,6 +24,7 @@ import {
 import type { ViewFieldConfig } from './types';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusBadge } from '../StatusBadge';
+import { useTranslation } from '@/locales';
 
 const { Text, Paragraph } = Typography;
 
@@ -39,6 +40,7 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
   data,
 }) => {
   const { token } = antdTheme.useToken();
+  const { t } = useTranslation();
 
   // Custom render hook
   if (field.render) {
@@ -180,12 +182,12 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
         return value ? (
           <Space size={4} style={{ color: '#1f8a65' }}>
             <CheckCircleFilled />
-            <span style={{ fontSize: 12.5 }}>Có hiệu lực</span>
+            <span style={{ fontSize: 12.5 }}>{t.view.activeEffect}</span>
           </Space>
         ) : (
           <Space size={4} style={{ color: token.colorTextQuaternary }}>
             <CloseCircleFilled />
-            <span style={{ fontSize: 12.5 }}>Không</span>
+            <span style={{ fontSize: 12.5 }}>{t.view.inactive}</span>
           </Space>
         );
 
@@ -243,7 +245,7 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
           >
             {isPdf ? <FilePdfOutlined style={{ color: '#cf2d56', fontSize: 16 }} /> : <FileOutlined />}
             <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {typeof value === 'string' ? value.split('/').pop() : 'Tệp đính kèm'}
+              {typeof value === 'string' ? value.split('/').pop() : t.view.attachment}
             </span>
             <DownloadOutlined style={{ color: token.colorPrimary }} />
           </a>
@@ -254,7 +256,7 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
         if (!Array.isArray(value) || value.length === 0) {
           return (
             <span style={{ color: token.colorTextQuaternary, fontStyle: 'italic', fontSize: 13 }}>
-              Không có dữ liệu
+              {t.view.noData}
             </span>
           );
         }

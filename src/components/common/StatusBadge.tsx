@@ -1,6 +1,7 @@
 import React from 'react';
 import type { EmployeeStatus } from '@/types';
 import { EMPLOYEE_STATUS_LABELS } from '@/types';
+import { useTranslation } from '@/locales';
 
 export interface StatusBadgeProps {
   status: EmployeeStatus | string;
@@ -19,7 +20,9 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   className = '',
   style,
 }) => {
-  const displayLabel = label || EMPLOYEE_STATUS_LABELS[status as EmployeeStatus] || status;
+  const { t } = useTranslation();
+  const localizedStatus = (t.status as Record<string, string>)?.[status as string];
+  const displayLabel = label || localizedStatus || EMPLOYEE_STATUS_LABELS[status as EmployeeStatus] || status;
 
   let statusClass: string;
   switch (status) {

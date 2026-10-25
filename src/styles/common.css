@@ -181,51 +181,382 @@
 
 
 /* --------------------------------------------------------------------------
-   Header Components
+   Header Components (Cursor Hairline Design)
    -------------------------------------------------------------------------- */
 .hrm-header {
-  padding: 0 24px !important;
-  display: flex;
+  padding: 0 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  height: 56px !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* Global Quick Search Trigger Button */
+.header-search-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  height: 60px !important;
-  transition: background-color 0.25s ease, border-color 0.25s ease !important;
+  gap: 12px;
+  height: 34px;
+  width: 260px;
+  padding: 0 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12.5px;
+  transition: all 0.15s ease;
+}
+
+.header-search-btn:hover {
+  border-color: #f54e00 !important;
+}
+
+.header-kbd {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+/* Header Square Tool Buttons (Theme, Notification, Language) */
+.header-tool-btn {
+  height: 34px !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.header-tool-btn:hover {
+  border-color: #f54e00 !important;
+}
+
+.hrm-header-actions {
+  gap: 10px !important;
 }
 
 .theme-toggle-pill {
+  height: 36px;
+  padding: 0 9px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  transition: all 0.25s ease;
+  gap: 6px;
+  border: 1px solid #e6e5e0;
+  border-radius: 9px;
+  background: #fff;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.header-divider-line {
-  width: 1px;
-  height: 22px;
-  margin: 0 4px;
-  transition: background-color 0.25s ease;
+.theme-toggle-pill .anticon {
+  color: #807d72;
+  font-size: 13px;
+  transition: color 0.2s ease;
 }
 
-.hrm-user-chip {
-  display: flex;
+.theme-toggle-pill .anticon.is-active {
+  color: #f54e00;
+}
+
+.header-language-btn.ant-btn {
+  height: 36px;
+  min-width: 76px;
+  padding: 0 10px;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #e6e5e0;
+  border-radius: 9px;
+  background: #fff;
+  color: #5a5852;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  box-shadow: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.header-language-btn.ant-btn:hover,
+.header-language-btn.ant-btn:focus-visible {
+  border-color: #f54e00 !important;
+  color: #f54e00 !important;
+  background: #fff !important;
+}
+
+.header-language-caret {
+  font-size: 9px;
+}
+
+.header-tool-btn.ant-btn {
+  background: #fff;
+  border: 1px solid #e6e5e0;
+  color: #5a5852;
+}
+
+.header-tool-btn.ant-btn:hover,
+.header-tool-btn.ant-btn:focus-visible {
+  color: #f54e00 !important;
+  border-color: #f54e00 !important;
+}
+
+.header-notification-badge .ant-badge-count {
+  background: #f54e00;
+  box-shadow: none;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.header-notification-trigger {
+  display: inline-flex;
+}
+
+.header-notification-popover .ant-popover-inner {
+  padding: 0;
+  border: 1px solid #e6e5e0;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.header-notification-popover .ant-popover-title {
+  margin: 0;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #efeee8;
+  color: #26251e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.header-notification-panel {
+  width: min(340px, calc(100vw - 48px));
+  max-height: 380px;
+  overflow: auto;
+}
+
+.header-notification-empty {
+  margin: 0;
+  padding: 24px 8px;
+}
+
+.header-notification-empty .ant-empty-description {
+  color: #807d72;
+  font-size: 12px;
+}
+
+.header-notification-item {
+  gap: 12px;
+  align-items: flex-start !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #efeee8 !important;
+}
+
+.header-notification-item:last-child {
+  border-bottom: 0 !important;
+}
+
+.header-notification-item.is-clickable {
   cursor: pointer;
-  padding: 4px 10px 4px 6px;
-  border-radius: 8px;
-  transition: border-color 0.15s ease;
+}
+
+.header-notification-item.is-clickable:hover {
+  background: #fafaf7;
+}
+
+.header-notification-copy {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-notification-copy .ant-typography {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.header-notification-time {
+  font-size: 11px !important;
+}
+
+.header-notification-unread-dot {
+  width: 7px;
+  height: 7px;
+  margin-top: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: #f54e00;
+}
+
+.header-avatar-trigger {
+  width: 38px;
+  height: 38px;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e6e5e0;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.header-avatar-trigger:hover,
+.header-avatar-trigger:focus-visible,
+.header-avatar-trigger.ant-dropdown-open {
+  border-color: #f54e00;
+  outline: none;
+}
+
+.header-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 4px;
+  max-width: 240px;
+}
+
+.header-profile-info strong,
+.header-profile-info span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-profile-info strong {
+  color: #26251e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.header-profile-info span {
+  color: #807d72;
+  font-size: 12px;
+}
+
+[data-theme='dark'] .theme-toggle-pill,
+[data-theme='dark'] .header-language-btn.ant-btn,
+[data-theme='dark'] .header-tool-btn.ant-btn,
+[data-theme='dark'] .header-avatar-trigger {
+  border-color: #2d2d2d;
+  background: #1e1e1e;
+  color: #c4c4c4;
+}
+
+[data-theme='dark'] .header-language-btn.ant-btn:hover,
+[data-theme='dark'] .header-language-btn.ant-btn:focus-visible,
+[data-theme='dark'] .header-tool-btn.ant-btn:hover,
+[data-theme='dark'] .header-tool-btn.ant-btn:focus-visible {
+  border-color: #f54e00 !important;
+  color: #f54e00 !important;
+  background: #1e1e1e !important;
+}
+
+[data-theme='dark'] .header-profile-info strong {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .header-profile-info span {
+  color: #9ca3af;
+}
+
+[data-theme='dark'] .header-notification-popover .ant-popover-inner {
+  border-color: #2d2d2d;
+  background: #1e1e1e;
+}
+
+[data-theme='dark'] .header-notification-popover .ant-popover-title {
+  border-color: #2d2d2d;
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .header-notification-item {
+  border-color: #2d2d2d !important;
+}
+
+[data-theme='dark'] .header-notification-item.is-clickable:hover {
+  background: #262626;
+}
+
+[data-theme='dark'] .header-notification-empty .ant-empty-description {
+  color: #9ca3af;
 }
 
 .hrm-content-container {
   padding: 20px 24px 32px !important;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 56px);
   width: 100% !important;
   box-sizing: border-box !important;
+}
+
+.app-error-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f7f7f4;
+  color: #26251e;
+}
+
+.app-error-panel {
+  width: min(100%, 720px);
+  padding: 28px;
+  border: 1px solid #e6e5e0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.app-error-panel h1 { margin: 0 0 8px; font-size: 22px; }
+.app-error-panel > p { margin: 0 0 16px; color: #b42318; overflow-wrap: anywhere; }
+.app-error-panel details { border: 1px solid #e6e5e0; border-radius: 8px; padding: 12px; }
+.app-error-panel summary { cursor: pointer; font-weight: 600; }
+.app-error-panel pre { max-height: 280px; overflow: auto; margin: 12px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.5 var(--font-mono); }
+.app-error-actions { display: flex; gap: 8px; margin-top: 16px; }
+.app-error-actions button { min-height: 38px; padding: 0 14px; border: 1px solid #e6e5e0; border-radius: 8px; background: #fff; color: #26251e; cursor: pointer; font: inherit; }
+.app-error-actions button:first-child { border-color: #f54e00; background: #f54e00; color: #fff; }
+[data-theme='dark'] .app-error-screen { background: #141414; color: #e5e7eb; }
+[data-theme='dark'] .app-error-panel,
+[data-theme='dark'] .app-error-panel details,
+[data-theme='dark'] .app-error-actions button { border-color: #2d2d2d; background: #1e1e1e; color: #e5e7eb; }
+[data-theme='dark'] .app-error-actions button:first-child { border-color: #f54e00; background: #f54e00; color: #fff; }
+
+/* Route changes use Ant Design motion tokens so page motion matches the menu. */
+.hrm-page-transition {
+  animation-name: hrm-page-enter;
+  animation-fill-mode: both;
+}
+
+@keyframes hrm-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hrm-page-transition {
+    animation: none !important;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -265,6 +596,28 @@
 
 .common-table-card .ant-table-cell {
   vertical-align: middle !important;
+}
+
+/* Keep the record total at the left edge of the CommonTable pagination row. */
+.common-table-card .ant-pagination-total-text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  margin-inline-end: auto !important;
+  border: 1px solid #e6e5e0;
+  border-radius: 8px;
+  background: #fafaf7;
+  color: #5a5852;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+[data-theme='dark'] .common-table-card .ant-pagination-total-text {
+  border-color: #2d2d2d;
+  background: #262626;
+  color: #c4c4c4;
 }
 
 .common-table-card .ant-table-thead>tr>th {

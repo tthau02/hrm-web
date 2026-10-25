@@ -22,6 +22,7 @@ import {
 } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useTranslation } from '@/locales';
 import type { FilterField, FilterBarProps, FilterValue } from './types';
 
 const { RangePicker } = DatePicker;
@@ -49,8 +50,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onReset,
   loading = false,
   itemWidth = 260,
-  searchButtonText = 'Tìm kiếm',
-  resetButtonText = 'Làm mới',
+  searchButtonText,
+  resetButtonText,
   showSearchButton = true,
   showResetButton = true,
   enableAdvancedFilters,
@@ -60,7 +61,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   showExportButton = false,
   onExport,
   exportLoading = false,
-  exportButtonText = 'Xuất Excel',
+  exportButtonText,
   extraActions,
   cardBordered = false,
   className = '',
@@ -68,6 +69,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 }) => {
   const { token } = antdTheme.useToken();
   const { isMobile, isTablet } = useResponsive();
+  const { t, formatMessage } = useTranslation();
+
+  const resolvedSearchText = searchButtonText || t.filter.search;
+  const resolvedResetText = resetButtonText || t.filter.reset;
+  const resolvedExportText = exportButtonText || t.filter.export;
 
   // Support both items and fields aliases
   const items = useMemo(() => propFields ?? propItems ?? [], [propFields, propItems]);
@@ -287,7 +293,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       case 'search':
         controlNode = (
           <Input
-            placeholder={(item.placeholder as string) || 'Tìm kiếm...'}
+            placeholder={(item.placeholder as string) || t.filter.searchPlaceholder}
             prefix={<SearchOutlined style={{ color: token.colorTextSecondary }} />}
             value={(val as string) ?? ''}
             allowClear={item.allowClear ?? true}
@@ -311,7 +317,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       case 'text':
         controlNode = (
           <Input
-            placeholder={(item.placeholder as string) || 'Nhập nội dung...'}
+            placeholder={(item.placeholder as string) || t.filter.inputPlaceholder}
             value={(val as string) ?? ''}
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
@@ -334,7 +340,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       case 'number':
         controlNode = (
           <InputNumber
-            placeholder={(item.placeholder as string) || 'Nhập số...'}
+            placeholder={(item.placeholder as string) || t.filter.inputNumberPlaceholder}
             value={val as number | undefined}
             min={item.min}
             max={item.max}
@@ -356,7 +362,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         const placeholders: [string, string] =
           Array.isArray(item.placeholder) && item.placeholder.length >= 2
             ? [item.placeholder[0], item.placeholder[1]]
-            : ['Từ số...', 'Đến số...'];
+            : [t.filter.fromNumber, t.filter.toNumber];
 
         controlNode = (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%' }}>
@@ -402,10 +408,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         const defaultAllLabel =
           item.allLabel ||
           (typeof item.placeholder === 'string' && item.placeholder.trim()
-            ? item.placeholder.startsWith('Tất cả')
+            ? item.placeholder.startsWith(t.filter.allPrefix) || item.placeholder.startsWith('All')
               ? item.placeholder
-              : `Tất cả ${item.placeholder.replace(/^Chọn\s*/i, '').toLowerCase()}`
-            : 'Tất cả');
+              : formatMessage(t.filter.allWithPrefix, {
+                  name: item.placeholder.replace(/^Chọn\s*|^Select\s*/i, '').toLowerCase(),
+                })
+            : t.common.all);
 
         const resolvedOptions =
           includeAll && !hasAllInOptions
@@ -416,7 +424,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         const isSearchable = Boolean(item.search ?? item.showSearch);
         controlNode = (
           <Select
-            placeholder={(item.placeholder as string) || 'Chọn...'}
+            placeholder={(item.placeholder as string) || t.filter.selectPlaceholder}
             value={selectVal as string | number | undefined}
             options={resolvedOptions}
             allowClear={item.allowClear ?? true}
@@ -450,7 +458,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <Select
             mode="multiple"
             maxTagCount="responsive"
-            placeholder={(item.placeholder as string) || 'Chọn nhiều...'}
+            placeholder={(item.placeholder as string) || t.filter.selectMultiplePlaceholder}
             value={selectVal}
             options={item.options || []}
             allowClear={item.allowClear ?? true}
@@ -476,7 +484,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       case 'date':
         controlNode = (
           <DatePicker
-            placeholder={(item.placeholder as string) || 'Chọn ngày'}
+            placeholder={(item.placeholder as string) || t.filter.selectDate}
             value={val as Dayjs}
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
@@ -495,7 +503,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         const placeholders: [string, string] =
           Array.isArray(item.placeholder) && item.placeholder.length >= 2
             ? [item.placeholder[0], item.placeholder[1]]
-            : ['Từ ngày', 'Đến ngày'];
+            : [t.filter.fromDate, t.filter.toDate];
         controlNode = (
           <RangePicker
             placeholder={placeholders}
@@ -517,7 +525,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       case 'time':
         controlNode = (
           <TimePicker
-            placeholder={(item.placeholder as string) || 'Chọn giờ'}
+            placeholder={(item.placeholder as string) || t.filter.selectTime}
             value={val as Dayjs}
             allowClear={item.allowClear ?? true}
             disabled={item.disabled}
@@ -641,7 +649,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 onClick={handleSearch}
                 className="btn-cursor-primary"
               >
-                {searchButtonText}
+                {resolvedSearchText}
               </Button>
             )}
 
@@ -656,7 +664,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   color: token.colorTextHeading,
                 }}
               >
-                {resetButtonText}
+                {resolvedResetText}
               </Button>
             )}
 
@@ -674,8 +682,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               >
                 <span>
                   {showAdvanced
-                    ? advancedFiltersLabel?.hide || 'Thu gọn bộ lọc'
-                    : advancedFiltersLabel?.show || 'Bộ lọc nâng cao'}
+                    ? advancedFiltersLabel?.hide || t.filter.collapse
+                    : advancedFiltersLabel?.show || t.filter.advanced}
                 </span>
                 {activeAdvancedCount > 0 && (
                   <Badge
@@ -707,7 +715,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   color: token.colorTextHeading,
                 }}
               >
-                {exportButtonText}
+                {resolvedExportText}
               </Button>
             )}
 
