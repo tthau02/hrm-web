@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { ConfigProvider, theme as antdTheme, App as AntdApp } from 'antd';
+import { ConfigProvider, App as AntdApp } from 'antd';
+import { getAntdThemeConfig } from '@/theme';
 import viVN from 'antd/locale/vi_VN';
 import enUS from 'antd/locale/en_US';
 import { BrowserRouter } from 'react-router-dom';
@@ -109,59 +110,7 @@ const ThemedApp: React.FC = () => {
   return (
     <ConfigProvider
       locale={currentLocale === 'en' ? enUS : viVN}
-      theme={{
-        algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-        token: {
-          colorPrimary: '#f54e00', // Cursor Orange from DESIGN.md
-          colorPrimaryHover: '#d04200',
-          colorPrimaryActive: '#b33900',
-          motionDurationFast: '0.18s',
-          motionDurationMid: '0.26s',
-          motionDurationSlow: '0.34s',
-          motionEaseInOut: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
-          motionEaseOut: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
-          borderRadius: 8,
-          fontFamily:
-            "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          colorBgLayout: isDarkMode ? '#141414' : '#f7f7f4',
-          colorBgContainer: isDarkMode ? '#1e1e1e' : '#ffffff',
-          colorBorderSecondary: isDarkMode ? '#2d2d2d' : '#e6e5e0',
-        },
-        components: {
-          Button: {
-            controlHeight: 40,
-            borderRadius: 8,
-          },
-          Input: {
-            controlHeight: 40,
-            borderRadius: 8,
-          },
-          InputNumber: {
-            controlHeight: 40,
-            borderRadius: 8,
-          },
-          Select: {
-            controlHeight: 40,
-            borderRadius: 8,
-          },
-          DatePicker: {
-            controlHeight: 40,
-            borderRadius: 8,
-          },
-          Card: {
-            borderRadiusLG: 12,
-          },
-          Table: {
-            borderRadius: 12,
-          },
-          Menu: {
-            colorBgContainer: 'transparent',
-            subMenuItemBg: 'transparent',
-            itemBorderRadius: 8,
-            itemHeight: 40,
-          },
-        },
-      }}
+      theme={getAntdThemeConfig(isDarkMode)}
     >
       <AntdApp>
         <NotificationBridge />

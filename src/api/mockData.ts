@@ -28,7 +28,7 @@ export const mockDepartments: Department[] = [
     code: 'IT',
     managerName: 'Lê Minh Tuấn',
     employeeCount: 14,
-    description: 'Phát triển phần mềm, hạ tầng hệ thống và bảo mật thông tin.',
+    description: 'Phát triển phần mềm, hạ tầng hệ thống và an toàn thông tin.',
   },
   {
     id: 'dept-2',

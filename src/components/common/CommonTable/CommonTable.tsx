@@ -139,6 +139,7 @@ export function CommonTable<T extends object>({
         sortable,
         dataMapping,
         statusMapping,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         hide: _hide,
         render: customRender,
         ...restCol

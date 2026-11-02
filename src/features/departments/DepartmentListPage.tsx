@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Card, Typography, Space, Avatar, Spin } from 'antd';
+import { Row, Col, Card, Typography, Space, Avatar, Spin, Tag, theme as antdTheme } from 'antd';
 import {
   ApartmentOutlined,
   UserOutlined,
@@ -14,6 +14,7 @@ const { Text, Paragraph } = Typography;
 export const DepartmentListPage: React.FC = () => {
   const { data: deptResponse, isLoading } = useDepartmentsQuery();
   const departments = deptResponse?.data || [];
+  const { token } = antdTheme.useToken();
 
   if (isLoading) {
     return (
@@ -26,7 +27,8 @@ export const DepartmentListPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Quản lý Phòng ban"
+        title="Quản lý Phòng ban & Cơ cấu"
+        subtitle="Danh sách các phòng ban, đơn vị trực thuộc và nhân sự phụ trách"
         actions={[
           {
             key: 'add-dept',
@@ -49,90 +51,84 @@ export const DepartmentListPage: React.FC = () => {
               bordered={false}
               style={{
                 borderRadius: 12,
-                border: '1px solid #e6e5e0',
-                background: '#ffffff',
+                border: `1px solid ${token.colorBorderSecondary}`,
+                background: token.colorBgContainer,
                 boxShadow: 'none',
                 height: '100%',
                 transition: 'border-color 0.2s ease',
               }}
-              bodyStyle={{ padding: 24, display: 'flex', flexDirection: 'column', height: '100%' }}
+              styles={{
+                body: { padding: 22, display: 'flex', flexDirection: 'column', height: '100%' },
+              }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div
-                  style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 10,
-                    backgroundColor: '#fafaf7',
-                    color: '#26251e',
-                    border: '1px solid #e6e5e0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 18,
-                  }}
-                >
-                  <ApartmentOutlined />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Avatar
+                    size={42}
+                    icon={<ApartmentOutlined />}
+                    style={{
+                      backgroundColor: 'rgba(245, 78, 0, 0.1)',
+                      color: token.colorPrimary,
+                      borderRadius: 10,
+                      border: `1px solid ${token.colorBorderSecondary}`,
+                    }}
+                  />
+                  <div>
+                    <Text strong style={{ fontSize: 16, color: token.colorTextHeading, display: 'block' }}>
+                      {dept.name}
+                    </Text>
+                    <Tag
+                      style={{
+                        margin: '4px 0 0',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 11,
+                        borderRadius: 4,
+                        border: 'none',
+                        background: token.colorFillSecondary,
+                        color: token.colorTextSecondary,
+                      }}
+                    >
+                      {dept.code}
+                    </Tag>
+                  </div>
                 </div>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    background: '#efeee8',
-                    color: '#26251e',
-                    border: '1px solid #e6e5e0',
-                    padding: '2px 8px',
-                    borderRadius: 9999,
-                  }}
-                >
-                  {dept.code}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  marginTop: 16,
-                  marginBottom: 6,
-                  fontWeight: 500,
-                  fontSize: 16,
-                  color: '#26251e',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                {dept.name}
               </div>
 
               <Paragraph
-                style={{ fontSize: 13, minHeight: 40, marginBottom: 16, color: '#5a5852' }}
+                ellipsis={{ rows: 2 }}
+                style={{
+                  marginTop: 14,
+                  fontSize: 13,
+                  color: token.colorTextSecondary,
+                  lineHeight: 1.5,
+                  minHeight: 40,
+                }}
               >
-                {dept.description}
+                {dept.description || 'Chưa có mô tả cho phòng ban này.'}
               </Paragraph>
 
-              <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid #efeee8' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Text style={{ fontSize: 12, color: '#807d72' }}>
-                    Trưởng phòng
+              <div
+                style={{
+                  marginTop: 'auto',
+                  paddingTop: 14,
+                  borderTop: `1px solid ${token.colorBorderSecondary}`,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Space size={6} style={{ color: token.colorTextSecondary, fontSize: 13 }}>
+                  <UserOutlined style={{ fontSize: 13 }} />
+                  <span>Trưởng phòng:</span>
+                  <Text strong style={{ color: token.colorTextHeading, fontSize: 13 }}>
+                    {dept.managerName || 'Chưa bổ nhiệm'}
                   </Text>
-                  <Space size={6}>
-                    <Avatar size={18} icon={<UserOutlined />} style={{ backgroundColor: '#26251e' }} />
-                    <span style={{ fontSize: 13, color: '#26251e', fontWeight: 500 }}>
-                      {dept.managerName}
-                    </span>
-                  </Space>
-                </div>
+                </Space>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 12, color: '#807d72' }}>
-                    Quy mô nhân sự
-                  </Text>
-                  <Space size={4}>
-                    <TeamOutlined style={{ color: '#f54e00' }} />
-                    <span style={{ fontSize: 13, color: '#f54e00', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                      {dept.employeeCount} nhân sự
-                    </span>
-                  </Space>
-                </div>
+                <Space size={4} style={{ color: token.colorPrimary, fontWeight: 600, fontSize: 13 }}>
+                  <TeamOutlined />
+                  <span>{dept.employeeCount}</span>
+                </Space>
               </div>
             </Card>
           </Col>
