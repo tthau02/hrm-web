@@ -884,7 +884,7 @@
 .common-filter-bar .ant-select-focused .ant-select-selector,
 .common-filter-bar .ant-picker-focused {
   border-color: #0064e0 !important;
-  box-shadow: 0 0 0 1px #0064e0 !important;
+  box-shadow: none !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1127,7 +1127,7 @@
 .ant-input-number:focus,
 .ant-input-number:focus-within {
   border-color: #0064e0 !important;
-  box-shadow: 0 0 0 2px rgba(0, 100, 224, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .ant-input-number .ant-input-number-input-wrap,
@@ -1168,7 +1168,7 @@
 .ant-input-number-affix-wrapper-focused,
 .ant-input-number-affix-wrapper:focus-within {
   border-color: #0064e0 !important;
-  box-shadow: 0 0 0 2px rgba(0, 100, 224, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .ant-input-number-affix-wrapper input.ant-input-number-input {
@@ -1722,4 +1722,72 @@ textarea {
 [data-theme='dark'] .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: rgba(69, 153, 255, 0.22) !important;
   color: #4599ff !important;
+}
+
+/* --------------------------------------------------------------------------
+   Button gradients: left -> right, the right end a touch brighter.
+   Primary (brand) and danger buttons share one pair of variables.
+   -------------------------------------------------------------------------- */
+:root {
+  --wms-grad-primary: linear-gradient(90deg, #0058cc 0%, #1a7af0 100%);
+  --wms-grad-danger: linear-gradient(90deg, #bf2349 0%, #e04465 100%);
+}
+
+[data-theme='dark'] {
+  --wms-grad-primary: linear-gradient(90deg, #2573e0 0%, #4aa0ff 100%);
+  --wms-grad-danger: linear-gradient(90deg, #b82147 0%, #dd4a69 100%);
+}
+
+.ant-btn-primary:not(.ant-btn-dangerous):not(:disabled):not(.ant-btn-disabled),
+.btn-brand-primary:not(:disabled) {
+  background: var(--wms-grad-primary) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-primary.ant-btn-dangerous:not(:disabled):not(.ant-btn-disabled) {
+  background: var(--wms-grad-danger) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* Hover / press feedback without swapping gradients */
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover,
+.btn-brand-primary:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):active,
+.btn-brand-primary:not(:disabled):active {
+  filter: brightness(0.94);
+}
+
+/* --------------------------------------------------------------------------
+   No thick default focus ring (antd draws a 3-4px outline / shadow around controls).
+   Keyboard focus stays visible through a subtle brightness change on buttons and the
+   coloured 1px border on inputs.
+   -------------------------------------------------------------------------- */
+.ant-btn:focus,
+.ant-btn:focus-visible,
+.ant-btn-primary:focus-visible,
+.ant-btn-dangerous:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ant-btn:focus-visible:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-number-focused,
+.ant-input-number-affix-wrapper-focused,
+.ant-select-focused,
+.ant-select-open,
+.ant-picker-focused {
+  outline: none !important;
+  box-shadow: none !important;
 }
