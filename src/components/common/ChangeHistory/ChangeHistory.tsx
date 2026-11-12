@@ -340,7 +340,7 @@ export const ChangeHistory: React.FC<ChangeHistoryProps> = ({
   // Card mode render item
   const renderCardItem = (item: ChangeHistoryItem, index: number) => {
     const isEven = index % 2 === 0;
-    const accentColor = isEven ? token.colorPrimary : '#10b981'; // Cursor Orange or Emerald
+    const accentColor = isEven ? token.colorPrimary : '#10b981'; // Brand blue or Emerald
 
     return (
       <div

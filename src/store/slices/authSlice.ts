@@ -3,16 +3,15 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User } from '@/types';
 
 // Read initial state from localStorage if available
-const storedToken = localStorage.getItem('hrm_token');
-const storedUser = localStorage.getItem('hrm_user');
+const storedToken = localStorage.getItem('sasco_token');
+const storedUser = localStorage.getItem('sasco_user');
 
 const initialUser: User | null = storedUser ? JSON.parse(storedUser) : {
   id: 'usr-1',
-  name: 'Nguyễn Văn Quản Trị',
-  email: 'admin@hrm.vn',
+  name: 'Quản trị hệ thống',
+  email: 'admin@sasco.vn',
   role: 'admin',
-  department: 'Ban Giám Đốc',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  department: 'Ban Quản trị',
 };
 
 const initialState: AuthState = {
@@ -35,16 +34,16 @@ export const authSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = true;
       state.error = null;
-      localStorage.setItem('hrm_token', action.payload.token);
-      localStorage.setItem('hrm_user', JSON.stringify(action.payload.user));
+      localStorage.setItem('sasco_token', action.payload.token);
+      localStorage.setItem('sasco_user', JSON.stringify(action.payload.user));
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-      localStorage.removeItem('hrm_token');
-      localStorage.removeItem('hrm_user');
+      localStorage.removeItem('sasco_token');
+      localStorage.removeItem('sasco_user');
     },
     setAuthLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;

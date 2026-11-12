@@ -81,7 +81,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     const isDanger = action.variant === 'danger' || action.danger;
 
     const defaultClass = isPrimary
-      ? 'btn-cursor-primary'
+      ? 'btn-brand-primary'
       : isDanger
         ? ''
         : 'btn-hairline-secondary';

@@ -42,8 +42,8 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
   const { token } = antdTheme.useToken();
   const { t } = useTranslation();
 
-  // Custom render hook
-  if (field.render) {
+  // type 'custom' + render = full control (no label wrapper)
+  if (field.render && field.type === 'custom') {
     return <>{field.render(value, data)}</>;
   }
 
@@ -79,8 +79,46 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
     );
   }
 
+  const moneyNode = (n: number) => (
+    <span
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontWeight: 600,
+        fontSize: 14,
+        color: token.colorTextHeading,
+      }}
+    >
+      {formatCurrency(n)}
+    </span>
+  );
+
   // Render Value based on type
   const renderValue = () => {
+    // Custom render keeps the label/value layout; numbers are formatted by field type
+    if (field.render) {
+      const out = field.render(value, data);
+      if (out === null || out === undefined || out === '') {
+        return (
+          <span style={{ color: token.colorTextQuaternary, fontStyle: 'italic', fontSize: 13 }}>
+            {field.placeholder || '-'}
+          </span>
+        );
+      }
+      if (typeof out === 'number') {
+        if (field.type === 'money' || field.type === 'currency') return moneyNode(out);
+        return (
+          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 14, color: token.colorTextHeading }}>
+            {out.toLocaleString('vi-VN')}
+          </span>
+        );
+      }
+      return typeof out === 'string' ? (
+        <Text style={{ color: token.colorTextHeading, fontSize: 14, ...field.contentStyle }}>{out}</Text>
+      ) : (
+        <>{out}</>
+      );
+    }
+
     if (value === null || value === undefined || value === '') {
       return (
         <span style={{ color: token.colorTextQuaternary, fontStyle: 'italic', fontSize: 13 }}>
@@ -116,28 +154,18 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
 
       case 'money':
       case 'currency':
-        return (
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontWeight: 600,
-              color: token.colorTextHeading,
-            }}
-          >
-            {typeof value === 'number' ? formatCurrency(value) : formatCurrency(Number(value))}
-          </span>
-        );
+        return moneyNode(Number(value));
 
       case 'date':
         return (
-          <span style={{ color: token.colorTextSecondary, fontSize: 13 }}>
+          <span style={{ color: token.colorTextHeading, fontSize: 14, fontFamily: 'var(--font-mono)' }}>
             {formatDate(String(value))}
           </span>
         );
 
       case 'datetime':
         return (
-          <span style={{ color: token.colorTextSecondary, fontSize: 13 }}>
+          <span style={{ color: token.colorTextHeading, fontSize: 14, fontFamily: 'var(--font-mono)' }}>
             {formatDate(String(value), 'DD/MM/YYYY HH:mm')}
           </span>
         );
@@ -149,8 +177,8 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
               marginBottom: 0,
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
-              color: token.colorText,
-              fontSize: 13,
+              color: token.colorTextHeading,
+              fontSize: 14,
               lineHeight: 1.6,
             }}
           >
@@ -310,7 +338,7 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
           <Text
             style={{
               color: token.colorTextHeading,
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: 400,
               ...field.contentStyle,
             }}
@@ -326,14 +354,14 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 3,
-        padding: '6px 0',
+        gap: 4,
+        padding: '8px 0',
       }}
     >
       {field.label && (
         <span
           style={{
-            fontSize: 12,
+            fontSize: 12.5,
             fontWeight: 500,
             color: token.colorTextSecondary,
             textTransform: 'none',
@@ -344,7 +372,7 @@ export const DynamicFieldDisplay: React.FC<DynamicFieldDisplayProps> = ({
           {field.label}
         </span>
       )}
-      <div style={{ minHeight: 22, display: 'flex', alignItems: 'center' }}>
+      <div style={{ minHeight: 24, display: 'flex', alignItems: 'center' }}>
         {renderValue()}
       </div>
       {field.description && (

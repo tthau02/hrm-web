@@ -171,7 +171,7 @@ export const MainLayout: React.FC = () => {
   // Determine current active and open keys
   const currentKey = location.pathname;
   const openKeys = useMemo(() => {
-    const routeKeys = currentKey.startsWith('/employees') ? ['/employees-group'] : [];
+    const routeKeys = currentKey.startsWith('/products') ? ['/warehouse-group'] : [];
     return [...new Set([...manuallyOpenKeys, ...routeKeys])];
   }, [currentKey, manuallyOpenKeys]);
 
@@ -208,7 +208,7 @@ export const MainLayout: React.FC = () => {
         collapsed={collapsedSidebar}
         width={260}
         collapsedWidth={72}
-        className="hrm-sidebar"
+        className="wms-sidebar"
         theme={isDarkMode ? 'dark' : 'light'}
         style={{
           background: token.colorBgContainer,
@@ -217,31 +217,26 @@ export const MainLayout: React.FC = () => {
       >
         {/* Brand Header */}
         <div
-          className={`hrm-sidebar-brand ${collapsedSidebar ? 'collapsed' : 'expanded'}`}
+          className={`wms-sidebar-brand ${collapsedSidebar ? 'collapsed' : 'expanded'}`}
           style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}
         >
-          <div className="hrm-logo-icon">H</div>
+          <div className="wms-logo-icon">S</div>
 
           {!collapsedSidebar && (
             <div style={{ overflow: 'hidden' }}>
               <div
-                className="hrm-brand-title"
+                className="wms-brand-title"
                 style={{ color: token.colorTextHeading }}
               >
-                HRM Portal
+                SASCO WMS
               </div>
-              <div
-                className="hrm-brand-tag"
-                style={{ color: token.colorTextSecondary }}
-              >
-                Enterprise
-              </div>
+              <div className="wms-brand-tag">Kho miễn thuế</div>
             </div>
           )}
         </div>
 
         {/* Dynamic Navigation Menu with Parent/Child Hierarchy & Role Permission */}
-        <div className="hrm-sidebar-menu-wrap">
+        <div className="wms-sidebar-menu-wrap">
           <Menu
             mode="inline"
             selectedKeys={[currentKey]}
@@ -249,7 +244,7 @@ export const MainLayout: React.FC = () => {
             onOpenChange={setManuallyOpenKeys}
             items={menuItems}
             onClick={handleMenuClick}
-            className="hrm-sidebar-menu"
+            className="wms-sidebar-menu"
           />
         </div>
       </Sider>
@@ -258,7 +253,7 @@ export const MainLayout: React.FC = () => {
       <Layout style={{ background: token.colorBgLayout }}>
         {/* Redesigned Clean Header tied to Ant Design Token */}
         <Header
-          className="hrm-header"
+          className="wms-header"
           style={{
             background: token.colorBgContainer,
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
@@ -295,7 +290,7 @@ export const MainLayout: React.FC = () => {
           </div>
 
           {/* Header controls are separate components so each can grow independently. */}
-          <Space className="hrm-header-actions" size={isMobile ? 6 : 10} align="center">
+          <Space className="wms-header-actions" size={isMobile ? 6 : 10} align="center">
             <HeaderNotification />
             <HeaderLanguageDropdown />
             <HeaderThemeSwitcher />
@@ -304,7 +299,7 @@ export const MainLayout: React.FC = () => {
         </Header>
 
         {/* Content Area */}
-        <Content className="hrm-content-container">
+        <Content className="wms-content-container">
           <Outlet />
         </Content>
       </Layout>
@@ -322,19 +317,17 @@ export const MainLayout: React.FC = () => {
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="hrm-logo-icon">H</div>
+              <div className="wms-logo-icon">S</div>
               <div>
-                <div className="hrm-brand-title" style={{ color: token.colorTextHeading }}>
-                  HRM Portal
+                <div className="wms-brand-title" style={{ color: token.colorTextHeading }}>
+                  SASCO WMS
                 </div>
-                <div className="hrm-brand-tag" style={{ color: token.colorTextSecondary }}>
-                  Enterprise
-                </div>
+                <div className="wms-brand-tag">Kho miễn thuế</div>
               </div>
             </div>
           }
         >
-          <div className="hrm-sidebar-menu-wrap">
+          <div className="wms-sidebar-menu-wrap">
             <Menu
               mode="inline"
               selectedKeys={[currentKey]}
@@ -342,7 +335,7 @@ export const MainLayout: React.FC = () => {
               onOpenChange={setManuallyOpenKeys}
               items={menuItems}
               onClick={handleMenuClick}
-              className="hrm-sidebar-menu"
+              className="wms-sidebar-menu"
             />
           </div>
         </Drawer>

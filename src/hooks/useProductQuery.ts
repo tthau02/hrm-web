@@ -1,32 +1,20 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { employeeApi, departmentApi, dashboardApi } from '@/api/endpoints';
-import type { Employee, EmployeeFilterParams } from '@/types';
+import { productApi } from '@/api/endpoints';
+import type { Product, ProductFilterParams } from '@/types';
 import { notify } from '@/components/common';
 
 export const QUERY_KEYS = {
-  employees: (params?: EmployeeFilterParams) => ['employees', params],
-  employeeDetail: (id: string) => ['employee', id],
-  departments: ['departments'],
-  dashboardStats: ['dashboardStats'],
+  products: (params?: ProductFilterParams) => ['products', params],
+  productDetail: (id: string) => ['product', id],
 };
 
-// Hook: Get list of employees
-export const useEmployeesQuery = (params?: EmployeeFilterParams) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.employees(params),
-    queryFn: () => employeeApi.getAll(params),
+// Hook: Get list of products
+export const useProductsQuery = (params?: ProductFilterParams) =>
+  useQuery({
+    queryKey: QUERY_KEYS.products(params),
+    queryFn: () => productApi.getAll(params),
   });
-};
-
-// Hook: Get single employee
-export const useEmployeeQuery = (id: string) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.employeeDetail(id),
-    queryFn: () => employeeApi.getById(id),
-    enabled: Boolean(id),
-  });
-};
 
 const getErrorMessage = (err: unknown, defaultMsg: string): string => {
   if (axios.isAxiosError(err)) {
@@ -35,67 +23,45 @@ const getErrorMessage = (err: unknown, defaultMsg: string): string => {
   return defaultMsg;
 };
 
-// Hook: Create employee mutation
-export const useCreateEmployeeMutation = () => {
+export const useCreateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Partial<Employee>) => employeeApi.create(data),
+    mutationFn: (data: Partial<Product>) => productApi.create(data),
     onSuccess: () => {
-      notify.success('Thêm nhân viên mới thành công!', 'Hồ sơ nhân viên đã được thêm vào hệ thống.');
-      queryClient.invalidateQueries({ queryKey: ['employees'] });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
+      notify.success('Thêm hàng hóa thành công!', 'Hàng hóa đã được ghi nhận vào kho.');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (err: unknown) => {
-      notify.error('Không thể thêm nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi tạo nhân viên.'));
+      notify.error('Không thể thêm hàng hóa', getErrorMessage(err, 'Đã xảy ra lỗi khi tạo hàng hóa.'));
     },
   });
 };
 
-// Hook: Update employee mutation
-export const useUpdateEmployeeMutation = () => {
+export const useUpdateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Employee> }) =>
-      employeeApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
+      productApi.update(id, data),
     onSuccess: () => {
-      notify.success('Cập nhật thông tin thành công!', 'Dữ liệu nhân viên đã được lưu.');
-      queryClient.invalidateQueries({ queryKey: ['employees'] });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
+      notify.success('Cập nhật thành công!', 'Thông tin hàng hóa đã được lưu.');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (err: unknown) => {
-      notify.error('Không thể cập nhật nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi cập nhật.'));
+      notify.error('Không thể cập nhật hàng hóa', getErrorMessage(err, 'Đã xảy ra lỗi khi cập nhật.'));
     },
   });
 };
 
-// Hook: Delete employee mutation
-export const useDeleteEmployeeMutation = () => {
+export const useDeleteProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => employeeApi.delete(id),
+    mutationFn: (id: string) => productApi.delete(id),
     onSuccess: () => {
-      notify.success('Xóa nhân viên thành công!', 'Hồ sơ nhân sự đã được xóa khỏi hệ thống.');
-      queryClient.invalidateQueries({ queryKey: ['employees'] });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboardStats });
+      notify.success('Xóa hàng hóa thành công!', 'Hàng hóa đã được xóa khỏi danh mục.');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (err: unknown) => {
-      notify.error('Không thể xóa nhân viên', getErrorMessage(err, 'Đã xảy ra lỗi khi xóa nhân viên.'));
+      notify.error('Không thể xóa hàng hóa', getErrorMessage(err, 'Đã xảy ra lỗi khi xóa hàng hóa.'));
     },
-  });
-};
-
-// Hook: Get departments
-export const useDepartmentsQuery = () => {
-  return useQuery({
-    queryKey: QUERY_KEYS.departments,
-    queryFn: () => departmentApi.getAll(),
-  });
-};
-
-// Hook: Get dashboard statistics
-export const useDashboardStatsQuery = () => {
-  return useQuery({
-    queryKey: QUERY_KEYS.dashboardStats,
-    queryFn: () => dashboardApi.getStats(),
   });
 };

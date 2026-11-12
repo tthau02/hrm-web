@@ -26,7 +26,7 @@ export function formatMessage(template: string, params?: Record<string, any>): s
  * Global static helper to read current locale from localStorage
  */
 export function getLocale(): SupportedLocale {
-  const saved = localStorage.getItem('hrm_locale');
+  const saved = localStorage.getItem('sasco_locale');
   return saved === 'en' ? 'en' : 'vi';
 }
 

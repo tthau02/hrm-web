@@ -7,20 +7,19 @@ import {
   Button,
   Space,
   Tooltip,
-  Modal,
   Spin,
   theme as antdTheme,
 } from 'antd';
 import {
   LeftOutlined,
   RightOutlined,
-  ExclamationCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
 import type { DynamicViewSidebarProps, ViewActionConfig, DynamicViewSection, ViewFieldConfig } from './types';
 import { DynamicFieldDisplay } from './DynamicFieldDisplay';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from '@/locales';
+import { useConfirmDialog } from '../ConfirmDialog';
 
 export function DynamicViewSidebar<T = any>({
   config,
@@ -28,7 +27,7 @@ export function DynamicViewSidebar<T = any>({
   onClose,
   data: propData,
   loading = false,
-  width = 720,
+  width = 960,
   placement = 'right',
   navigationIds = [],
   currentIndex = -1,
@@ -42,12 +41,13 @@ export function DynamicViewSidebar<T = any>({
   const { token } = antdTheme.useToken();
   const { isMobile, screenWidth } = useResponsive();
   const { t } = useTranslation();
+  const [openConfirm, confirmHolder] = useConfirmDialog();
   const activeData: T = (propData ?? config.data ?? ({} as T));
 
   // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
   const responsiveWidth = useMemo(() => {
     if (isMobile) return '100%';
-    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 720), 10);
+    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 960), 10);
     return Math.min(numericWidth, Math.round(screenWidth * 0.95));
   }, [isMobile, width, screenWidth]);
 
@@ -98,15 +98,13 @@ export function DynamicViewSidebar<T = any>({
   // Action Click Handler with Confirmation modal support
   const handleActionClick = (action: ViewActionConfig<T>) => {
     if (action.confirm) {
-      Modal.confirm({
-        centered: action.confirm.centered ?? true,
+      openConfirm({
         title: action.confirm.title,
-        content: action.confirm.description,
-        icon: <ExclamationCircleOutlined style={{ color: action.danger ? '#cf2d56' : token.colorPrimary }} />,
-        okText: action.confirm.okText || t.common.confirm,
-        cancelText: action.confirm.cancelText || t.common.cancel,
-        okButtonProps: { danger: action.danger },
-        onOk: () => action.onClick(activeData),
+        description: action.confirm.description,
+        okText: action.confirm.okText,
+        cancelText: action.confirm.cancelText,
+        danger: action.danger,
+        onConfirm: () => action.onClick(activeData),
       });
     } else {
       action.onClick(activeData);
@@ -158,7 +156,7 @@ export function DynamicViewSidebar<T = any>({
                 alignItems: 'center',
                 gap: 4,
                 padding: '3px 6px',
-                borderRadius: 6,
+                borderRadius: 10,
                 background: token.colorFillAlter,
                 border: `1px solid ${token.colorBorderSecondary}`,
               }}
@@ -209,7 +207,7 @@ export function DynamicViewSidebar<T = any>({
     if (!fields || fields.length === 0) return null;
 
     return (
-      <Row gutter={[16, 4]}>
+      <Row gutter={[24, 4]}>
         {fields.map((field, idx) => {
           const isHidden =
             typeof field.hidden === 'function' ? field.hidden(activeData) : field.hidden;
@@ -248,10 +246,10 @@ export function DynamicViewSidebar<T = any>({
             <div
               key={section.title || `sec-${sIdx}`}
               style={{
-                borderRadius: 10,
+                borderRadius: 16,
                 border: `1px solid ${token.colorBorderSecondary}`,
                 background: token.colorBgContainer,
-                padding: '16px 18px',
+                padding: '16px 20px',
               }}
             >
               {section.title && (
@@ -295,7 +293,7 @@ export function DynamicViewSidebar<T = any>({
           width: '100%',
         }}
       >
-        <Button onClick={onClose} style={{ minWidth: 110, height: 40, borderRadius: 8 }}>
+        <Button onClick={onClose} style={{ minWidth: 110, height: 'var(--height-control)' }}>
           {t.view.close}
         </Button>
 
@@ -306,14 +304,14 @@ export function DynamicViewSidebar<T = any>({
           return (
             <Button
               key={act.key}
-              type={act.type || (act.danger ? 'primary' : 'default')}
+              type={act.type || 'default'}
               danger={act.danger}
               icon={act.icon}
               disabled={isDisabled}
               loading={act.loading}
               onClick={() => handleActionClick(act)}
-              className={act.type === 'primary' && !act.danger ? 'btn-cursor-primary' : undefined}
-              style={{ minWidth: 120, height: 40 }}
+              className={act.type === 'primary' && !act.danger ? 'btn-brand-primary' : undefined}
+              style={{ minWidth: 130, height: 'var(--height-control)' }}
             >
               {act.label}
             </Button>
@@ -324,6 +322,7 @@ export function DynamicViewSidebar<T = any>({
   };
 
   return (
+    <>
     <Drawer
       open={open}
       onClose={onClose}
@@ -332,7 +331,7 @@ export function DynamicViewSidebar<T = any>({
       title={renderHeader()}
       footer={renderFooter()}
       destroyOnClose
-      closeIcon={<CloseOutlined style={{ fontSize: 14 }} />}
+      closable={{ placement: 'end', closeIcon: <CloseOutlined style={{ fontSize: 14 }} /> }}
       className={`dynamic-view-sidebar ${className}`.trim()}
       rootStyle={style}
       styles={{
@@ -420,5 +419,7 @@ export function DynamicViewSidebar<T = any>({
         )}
       </Spin>
     </Drawer>
+    {confirmHolder}
+    </>
   );
 }

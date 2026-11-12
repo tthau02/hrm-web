@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'hr_manager' | 'employee';
+export type Role = 'admin' | 'warehouse_manager' | 'staff';
 
 export interface User {
   id: string;
@@ -17,84 +17,66 @@ export interface AuthState {
   error: string | null;
 }
 
-export type EmployeeStatus = 'active' | 'probation' | 'resigned' | 'on_leave';
+// ---------------------------------------------------------------------------
+// Duty-free goods (sample CRUD entity used to validate the UI)
+// ---------------------------------------------------------------------------
+export type ProductStatus = 'in_stock' | 'low_stock' | 'out_of_stock' | 'on_hold';
 
-export const EmployeeStatusEnum = {
-  ACTIVE: 'active',
-  PROBATION: 'probation',
-  ON_LEAVE: 'on_leave',
-  RESIGNED: 'resigned',
-} as const;
-
-export const EMPLOYEE_STATUS_LABELS: Record<EmployeeStatus, string> = {
-  [EmployeeStatusEnum.ACTIVE]: 'Chính thức',
-  [EmployeeStatusEnum.PROBATION]: 'Thử việc',
-  [EmployeeStatusEnum.ON_LEAVE]: 'Nghỉ phép',
-  [EmployeeStatusEnum.RESIGNED]: 'Đã thôi việc',
+export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
+  in_stock: 'Còn hàng',
+  low_stock: 'Sắp hết',
+  out_of_stock: 'Hết hàng',
+  on_hold: 'Tạm giữ',
 };
 
-export const EMPLOYEE_STATUS_OPTIONS = [
-  { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.ACTIVE], value: EmployeeStatusEnum.ACTIVE },
-  { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.PROBATION], value: EmployeeStatusEnum.PROBATION },
-  { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.ON_LEAVE], value: EmployeeStatusEnum.ON_LEAVE },
-  { label: EMPLOYEE_STATUS_LABELS[EmployeeStatusEnum.RESIGNED], value: EmployeeStatusEnum.RESIGNED },
+export const PRODUCT_STATUS_OPTIONS = (
+  Object.keys(PRODUCT_STATUS_LABELS) as ProductStatus[]
+).map((value) => ({ label: PRODUCT_STATUS_LABELS[value], value }));
+
+export const PRODUCT_CATEGORY_OPTIONS = [
+  { label: 'Rượu & Đồ uống', value: 'liquor' },
+  { label: 'Thuốc lá', value: 'tobacco' },
+  { label: 'Nước hoa', value: 'perfume' },
+  { label: 'Mỹ phẩm', value: 'cosmetics' },
+  { label: 'Socola & Bánh kẹo', value: 'confectionery' },
+  { label: 'Đồng hồ & Phụ kiện', value: 'accessories' },
 ];
 
-export interface Department {
+export const WAREHOUSE_OPTIONS = [
+  { label: 'Kho ngoại quan SGN', value: 'SGN' },
+  { label: 'Kho ngoại quan DAD', value: 'DAD' },
+  { label: 'Kho ngoại quan PQC', value: 'PQC' },
+];
+
+export const PRODUCT_UNIT_OPTIONS = [
+  { label: 'Chai', value: 'Chai' },
+  { label: 'Hộp', value: 'Hộp' },
+  { label: 'Cây', value: 'Cây' },
+  { label: 'Thùng', value: 'Thùng' },
+  { label: 'Cái', value: 'Cái' },
+];
+
+export interface Product {
   id: string;
+  sku: string;
   name: string;
-  code: string;
-  managerName: string;
-  employeeCount: number;
-  description?: string;
+  brand: string;
+  category: string;
+  warehouse: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  status: ProductStatus;
+  importDate: string;
+  declarationNo?: string;
+  note?: string;
 }
 
-export interface Employee {
-  id: string;
-  code: string; // e.g., "EMP001"
-  fullName: string;
-  email: string;
-  phone: string;
-  avatar?: string;
-  departmentId: string;
-  departmentName: string;
-  position: string;
-  status: EmployeeStatus;
-  salary: number;
-  joinDate: string;
-  birthDate?: string;
-  address?: string;
-}
-
-export interface EmployeeFilterParams {
+export interface ProductFilterParams {
   search?: string;
-  departmentId?: string;
-  status?: EmployeeStatus | 'all';
-  page?: number;
-  pageSize?: number;
-}
-
-export interface AttendanceRecord {
-  id: string;
-  employeeId: string;
-  employeeName: string;
-  date: string;
-  checkIn: string;
-  checkOut?: string;
-  status: 'on_time' | 'late' | 'early_leave' | 'absent' | 'leave_approved';
-  workHours?: number;
-}
-
-export interface DashboardStats {
-  totalEmployees: number;
-  activeEmployees: number;
-  totalDepartments: number;
-  attendanceToday: number;
-  attendanceRate: number;
-  turnoverRate: number;
-  departmentDistribution: { name: string; value: number }[];
-  hiringTrend: { month: string; hires: number; departures: number }[];
-  attendanceTrend: { day: string; present: number; absent: number; late: number }[];
+  category?: string;
+  warehouse?: string;
+  status?: ProductStatus | 'all';
 }
 
 export interface ApiResponse<T> {

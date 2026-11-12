@@ -7,19 +7,19 @@ import {
   Avatar,
   Space,
   Tooltip,
-  Modal,
   Image,
   Tag,
   theme as antdTheme,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { TableRowSelection } from 'antd/es/table/interface';
-import { MoreOutlined, UserOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { MoreOutlined, UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { StatusBadge } from '../StatusBadge';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from '@/locales';
+import { useConfirmDialog } from '../ConfirmDialog';
 import type { CommonTableProps } from './types';
 
 // Safe nested value resolver
@@ -67,6 +67,7 @@ export function CommonTable<T extends object>({
   const { token } = antdTheme.useToken();
   const { isMobile } = useResponsive();
   const { t, formatMessage } = useTranslation();
+  const [openConfirm, confirmHolder] = useConfirmDialog();
 
   const resolvedActionTitle = actionColumnTitle || t.table.action;
   const resolvedIndexTitle = indexColumnTitle || t.table.index;
@@ -325,12 +326,12 @@ export function CommonTable<T extends object>({
                   src={data.avatar}
                   icon={<UserOutlined />}
                   size={40}
-                  className="employee-avatar"
+                  className="cell-avatar"
                   style={{ border: `2px solid ${token.colorBorderSecondary}`, flexShrink: 0 }}
                 />
                 <div style={{ minWidth: 0 }}>
                   <div
-                    className="employee-name"
+                    className="cell-name"
                     style={{
                       color: token.colorTextHeading,
                       fontWeight: 500,
@@ -671,17 +672,13 @@ export function CommonTable<T extends object>({
             disabled: act.disabled,
             onClick: () => {
               if (act.confirm) {
-                Modal.confirm({
-                  centered: act.confirm.centered ?? true,
+                openConfirm({
                   title: act.confirm.title,
-                  content: act.confirm.description,
-                  icon: <ExclamationCircleOutlined style={{ color: '#cf2d56' }} />,
-                  okText: act.confirm.okText || t.common.confirm,
-                  cancelText: act.confirm.cancelText || t.common.cancel,
-                  okButtonProps: { danger: act.danger },
-                  onOk: () => {
-                    act.confirm?.onConfirm();
-                  },
+                  description: act.confirm.description,
+                  okText: act.confirm.okText,
+                  cancelText: act.confirm.cancelText,
+                  danger: act.danger,
+                  onConfirm: () => act.confirm?.onConfirm(),
                 });
               } else if (act.onClick) {
                 act.onClick();
@@ -726,6 +723,7 @@ export function CommonTable<T extends object>({
     currentSize,
     token,
     t,
+    openConfirm,
   ]);
 
   // Row selection (checkbox / radio) support like common-table
@@ -774,7 +772,7 @@ export function CommonTable<T extends object>({
       bordered={cardBordered}
       className={`common-table-card ${cardClassName}`.trim()}
       style={{
-        borderRadius: 12,
+        borderRadius: 16,
         border: `1px solid ${token.colorBorderSecondary}`,
         background: token.colorBgContainer,
         boxShadow: 'none',
@@ -808,6 +806,7 @@ export function CommonTable<T extends object>({
         }
         {...tableProps}
       />
+      {confirmHolder}
     </Card>
   );
 }

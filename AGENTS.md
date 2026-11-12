@@ -1,12 +1,12 @@
-# HRM Web - AI Agent Guide & Component Reference
+# SASCO Duty-Free WMS - AI Agent Guide & Component Reference
 
-Tài liệu hướng dẫn dành cho AI Agents (Antigravity, Cursor, Copilot, Claude...) và lập trình viên khi phát triển các tính năng trên dự án **HRM Web**.
+Tài liệu hướng dẫn dành cho AI Agents (Antigravity, Cursor, Copilot, Claude...) và lập trình viên khi phát triển các tính năng trên dự án **SASCO Duty-Free WMS (POC quản lý kho hàng miễn thuế)**.
 
 ---
 
 ## 1. Tổng quan Dự án (Project Overview)
 
-- **Ngành nghề/Mục đích**: Hệ thống quản lý nhân sự (HRM - Human Resource Management).
+- **Ngành nghề/Mục đích**: POC hệ thống quản lý kho hàng miễn thuế (WMS) cho SASCO. Hiện chỉ có 1 chức năng CRUD mẫu: Hàng hóa miễn thuế (`src/features/products/`) để kiểm thử giao diện.
 - **Tech Stack**:
   - **Core**: React 18 (TypeScript), Vite
   - **UI Library**: Ant Design v5 (AntD)
@@ -23,13 +23,13 @@ Khi tạo mới hoặc sửa giao diện, **bắt buộc tuân thủ các quy t�
 
 1. **Không sử dụng Drop Shadow nhòe (No Blurry Shadows)**:
    - Toàn bộ card, table, drawer, filter bar dùng **Hairline 1px border**:
-     - Light mode: `border: 1px solid #e6e5e0`
-     - Dark mode: `border: 1px solid #2d2d2d`
-2. **Màu sắc chủ đạo (Cursor Orange)**:
-   - Primary CTA / Accent: `#f54e00` (Hover: `#d04200`, Active: `#b33900`)
-   - Nền trang (Canvas): `#f7f7f4` (Light) / `#141414` (Dark)
-   - Nền card/panel: `#ffffff` (Light) / `#1e1e1e` (Dark)
-   - Màu chữ: Display/Heading `#26251e`, Body `#5a5852`, Muted `#807d72`
+     - Light mode: `border: 1px solid #e1e6f0`
+     - Dark mode: `border: 1px solid #233058`
+2. **Màu sắc chủ đạo (Cobalt - xem bảng trong `DESIGN.md`)**:
+   - Primary CTA / Accent: `#0064e0` (Hover: `#0457cb`, Active: `#0346a3`); Accent Gold `#ccad6a` (chỉ logo)
+   - Nền trang (Canvas): `#e6ebf1` (Light) / `#0a1317` (Dark)
+   - Nền card/panel: `#ffffff` (Light) / `#141c21` (Dark)
+   - Màu chữ: Display/Heading `#0a1317`, Body `#444950`, Muted `#5d6c7b`
 3. **Typography**:
    - Font văn bản: `'Inter', system-ui, sans-serif`
    - Mã nhân viên, số tiền, ngày tháng, STT: `font-family: var(--font-mono)` (`'JetBrains Mono'`)
@@ -41,10 +41,10 @@ Khi tạo mới hoặc sửa giao diện, **bắt buộc tuân thủ các quy t�
 ## 3. Thư mục & Cấu trúc Dự án
 
 ```text
-hrm-web/
+sasco-wms-web/
 ├── .agents/
 │   └── skills/
-│       └── hrm-common-components/
+│       └── hrm-common-components/ (tên skill giữ nguyên)
 │           └── SKILL.md                 # Skill hướng dẫn AI viết common component
 ├── src/
 │   ├── api/                             # Axios client, endpoints, mockData
@@ -59,20 +59,22 @@ hrm-web/
 │   │   │   ├── StatCard.tsx             # Thẻ chỉ số KPI / thống kê
 │   │   │   ├── StatusBadge.tsx          # Huy hiệu trạng thái (Active, Probation...)
 │   │   │   └── Notification.tsx         # Thông báo bottomRight thay thế window.alert
-│   ├── features/                        # Các module tính năng (employees, departments...)
-│   ├── hooks/                           # Custom hooks (useHrmQuery...)
+│   ├── features/                        # Các module tính năng (products...)
+│   ├── hooks/                           # Custom hooks (useProductQuery...)
 │   ├── layouts/                         # MainLayout, Sidebar, Header
 │   ├── routes/                          # Định tuyến ứng dụng
 │   ├── store/                           # Redux slices (theme, auth...)
 │   └── styles/
 │       └── common.css                   # CSS tokens chuẩn DESIGN.md
-├── DESIGN.md                            # Nguyên tắc thiết kế Cursor Hairline
+├── DESIGN.md                            # Nguyên tắc thiết kế Hairline + bảng màu SASCO
 └── AGENTS.md                            # Tài liệu này
 ```
 
 ---
 
 ## 4. Hướng dẫn sử dụng Bộ Common Components
+
+> Các ví dụ dưới đây dùng thực thể `Employee` chỉ để minh họa API. Triển khai tham chiếu thực tế nằm ở `src/features/products/` (`ProductListPage`, `ProductView`, `ProductCreateOrUpdate`).
 
 Tất cả component được export trực tiếp từ `@/components/common`:
 ```tsx
@@ -509,7 +511,7 @@ const historyData: ChangeHistoryItem[] = [
 
 ## 5. Checklist khi AI Agent code tính năng mới
 
-- [ ] Đã đọc `DESIGN.md` để áp dụng màu Cursor Orange `#f54e00`, viền 1px hairline, không dùng drop shadow nhòe.
+- [ ] Đã đọc `DESIGN.md` để áp dụng bảng màu SASCO (Cobalt `#0064e0`), viền 1px hairline, không dùng drop shadow nhòe.
 - [ ] Bảng dữ liệu dùng `CommonTable`, không viết lại `Table` thủ công.
 - [ ] Bộ lọc dùng `FilterBar`.
 - [ ] Xem chi tiết dùng `DynamicViewSidebar` thay vì modal thông thường.

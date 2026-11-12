@@ -93,10 +93,10 @@ const ThemedApp: React.FC = () => {
 
   // Sync page background color directly with Ant Design theme state
   useEffect(() => {
-    document.body.style.backgroundColor = isDarkMode ? '#141414' : '#f7f7f4';
-    document.body.style.color = isDarkMode ? '#e5e7eb' : '#26251e';
+    document.body.style.backgroundColor = isDarkMode ? '#0a1317' : '#e6ebf1';
+    document.body.style.color = isDarkMode ? '#e5e7eb' : '#0a1317';
     try {
-      localStorage.setItem('hrm_dark_mode', String(isDarkMode));
+      localStorage.setItem('sasco_dark_mode', String(isDarkMode));
     } catch {
       // Continue without persistence when browser storage is unavailable.
     }

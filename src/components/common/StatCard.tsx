@@ -35,7 +35,7 @@ export const StatCard: React.FC<StatCardProps> = ({
     <Card
       bordered={false}
       style={{
-        borderRadius: 12,
+        borderRadius: 16,
         background: token.colorBgContainer,
         border: `1px solid ${token.colorBorderSecondary}`,
         boxShadow: 'none',

@@ -280,9 +280,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             ...item.style,
           }
         : {
+            // fieldWidth is the preferred width; controls grow to fill the row (up to maxWidth)
             width: fieldWidth,
             minWidth: 180,
-            flex: `0 0 ${typeof fieldWidth === 'number' ? `${fieldWidth}px` : fieldWidth}`,
+            maxWidth: isRange ? undefined : 460,
+            flex: `1 1 ${typeof fieldWidth === 'number' ? `${fieldWidth}px` : fieldWidth}`,
             boxSizing: 'border-box',
             ...item.style,
           };
@@ -444,7 +446,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             }
             style={{
               width: '100%',
-              height: 40,
+              height: 'var(--height-control)',
               borderColor: isInvalid ? token.colorError : undefined,
             }}
           />
@@ -473,7 +475,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(selectedVals) => handleFieldChange(k, selectedVals)}
             style={{
               width: '100%',
-              minHeight: 40,
+              minHeight: 'var(--height-control)',
               borderColor: isInvalid ? token.colorError : undefined,
             }}
           />
@@ -492,7 +494,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(dateVal) => handleFieldChange(k, dateVal)}
             style={{
               width: '100%',
-              height: 40,
+              height: 'var(--height-control)',
               borderColor: isInvalid ? token.colorError : undefined,
             }}
           />
@@ -514,7 +516,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(dates) => handleFieldChange(k, dates)}
             style={{
               width: '100%',
-              height: 40,
+              height: 'var(--height-control)',
               borderColor: isInvalid ? token.colorError : undefined,
             }}
           />
@@ -533,7 +535,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(timeVal) => handleFieldChange(k, timeVal)}
             style={{
               width: '100%',
-              height: 40,
+              height: 'var(--height-control)',
               borderColor: isInvalid ? token.colorError : undefined,
             }}
           />
@@ -547,7 +549,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             style={{
               display: 'flex',
               alignItems: 'center',
-              height: 40,
+              height: 'var(--height-control)',
               gap: 8,
             }}
           >
@@ -605,7 +607,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       bordered={cardBordered}
       className={`common-filter-bar ${className}`.trim()}
       style={{
-        borderRadius: 12,
+        borderRadius: 16,
         border: `1px solid ${token.colorBorderSecondary}`,
         background: token.colorBgContainer,
         boxShadow: 'none',
@@ -647,7 +649,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 icon={<SearchOutlined />}
                 loading={loading}
                 onClick={handleSearch}
-                className="btn-cursor-primary"
+                className="btn-brand-primary"
               >
                 {resolvedSearchText}
               </Button>

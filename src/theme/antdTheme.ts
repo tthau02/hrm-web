@@ -1,14 +1,14 @@
 import { theme as antdTheme, type ThemeConfig } from 'antd';
-import { colors, radius, typography } from './tokens';
+import { colors, radius, sizes, typography } from './tokens';
 
 /**
- * Centralized Ant Design theme configuration mapping directly to DESIGN.md
+ * Centralized Ant Design theme configuration mapping directly to DESIGN.md (SASCO palette)
  */
 export function getAntdThemeConfig(isDarkMode: boolean): ThemeConfig {
   return {
     algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
     token: {
-      colorPrimary: colors.brand.primary,
+      colorPrimary: isDarkMode ? colors.brand.primaryOnDark : colors.brand.primary,
       colorPrimaryHover: colors.brand.primaryHover,
       colorPrimaryActive: colors.brand.primaryActive,
       borderRadius: radius.md,
@@ -37,29 +37,36 @@ export function getAntdThemeConfig(isDarkMode: boolean): ThemeConfig {
     },
     components: {
       Button: {
-        controlHeight: 40,
-        borderRadius: radius.md,
+        controlHeight: sizes.control,
+        borderRadius: radius.control,
         fontWeight: 600,
         primaryShadow: 'none',
         defaultShadow: 'none',
         dangerShadow: 'none',
       },
       Input: {
-        controlHeight: 40,
-        borderRadius: radius.md,
+        controlHeight: sizes.control,
+        borderRadius: radius.control,
         colorBorder: isDarkMode ? colors.hairline.dark : colors.hairline.light,
       },
       InputNumber: {
-        controlHeight: 40,
-        borderRadius: radius.md,
+        controlHeight: sizes.control,
+        borderRadius: radius.control,
       },
       Select: {
-        controlHeight: 40,
-        borderRadius: radius.md,
+        controlHeight: sizes.control,
+        borderRadius: radius.control,
+        optionHeight: 38,
+        optionPadding: '8px 12px',
+        optionFontSize: 13.5,
+        optionSelectedFontWeight: 500,
+        optionSelectedColor: isDarkMode ? colors.brand.primaryOnDark : colors.brand.primary,
+        optionSelectedBg: isDarkMode ? 'rgba(69, 153, 255, 0.16)' : 'rgba(0, 100, 224, 0.08)',
+        optionActiveBg: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : colors.canvas.light,
       },
       DatePicker: {
-        controlHeight: 40,
-        borderRadius: radius.md,
+        controlHeight: sizes.control,
+        borderRadius: radius.control,
       },
       Card: {
         borderRadiusLG: radius.lg,
@@ -68,7 +75,7 @@ export function getAntdThemeConfig(isDarkMode: boolean): ThemeConfig {
       },
       Table: {
         borderRadius: radius.lg,
-        headerBg: isDarkMode ? '#171717' : colors.canvas.softLight,
+        headerBg: isDarkMode ? '#0f161a' : colors.canvas.softLight,
         headerColor: isDarkMode ? colors.text.inkDark : colors.text.inkLight,
         borderColor: isDarkMode ? colors.hairline.dark : colors.hairline.light,
       },
@@ -77,8 +84,13 @@ export function getAntdThemeConfig(isDarkMode: boolean): ThemeConfig {
         subMenuItemBg: 'transparent',
         itemBorderRadius: radius.md,
         itemHeight: 40,
-        itemSelectedBg: isDarkMode ? 'rgba(245, 78, 0, 0.15)' : 'rgba(245, 78, 0, 0.08)',
-        itemSelectedColor: colors.brand.primary,
+        itemBg: 'transparent',
+        itemColor: isDarkMode ? colors.text.bodyDark : colors.text.bodyLight,
+        itemHoverBg: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(10, 19, 23, 0.04)',
+        itemHoverColor: isDarkMode ? colors.text.inkDark : colors.text.inkLight,
+        itemSelectedBg: isDarkMode ? 'rgba(69, 153, 255, 0.16)' : 'rgba(0, 145, 255, 0.12)',
+        itemSelectedColor: isDarkMode ? colors.brand.primaryOnDark : colors.brand.primary,
+        groupTitleColor: colors.text.mutedLight,
       },
       Drawer: {
         colorBgElevated: isDarkMode ? colors.surface.cardDark : colors.surface.cardLight,

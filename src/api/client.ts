@@ -1,12 +1,7 @@
 import axios from 'axios';
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import {
-  mockDepartments,
-  mockEmployees,
-  getMockDashboardStats,
-  mockUsers,
-} from './mockData';
-import type { Employee, EmployeeFilterParams } from '@/types';
+import { mockProducts, mockUsers } from './mockData';
+import type { Product, ProductFilterParams } from '@/types';
 
 // Create base Axios instance
 export const apiClient = axios.create({
@@ -20,7 +15,7 @@ export const apiClient = axios.create({
 // Request interceptor: Attach JWT token if available
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('hrm_token');
+    const token = localStorage.getItem('sasco_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,8 +29,8 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('hrm_token');
-      localStorage.removeItem('hrm_user');
+      localStorage.removeItem('sasco_token');
+      localStorage.removeItem('sasco_user');
       // Redirect to login if needed
     }
     return Promise.reject(error);
@@ -92,153 +87,83 @@ if (USE_MOCK) {
       });
     }
 
-    if (url.includes('/dashboard/stats') && method === 'get') {
-      await delay(250);
+    const mockOk = (data: unknown, status = 200, extra: Record<string, unknown> = {}) => {
       const mockResponse: AxiosResponse = {
-        data: {
-          success: true,
-          data: getMockDashboardStats(),
-        },
-        status: 200,
+        data: { success: true, data, ...extra },
+        status,
         statusText: 'OK',
         headers: {},
         config,
       };
       return Promise.reject({ __isMockResponse: true, response: mockResponse });
-    }
+    };
 
-    if (url.includes('/departments') && method === 'get') {
-      await delay(200);
-      const mockResponse: AxiosResponse = {
-        data: {
-          success: true,
-          data: mockDepartments,
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config,
-      };
-      return Promise.reject({ __isMockResponse: true, response: mockResponse });
-    }
-
-    if (url.includes('/employees') && method === 'get') {
+    if (url.includes('/products') && method === 'get') {
       await delay(300);
-      const params: EmployeeFilterParams = config.params || {};
-      let list = [...mockEmployees];
+      const params: ProductFilterParams = config.params || {};
+      let list = [...mockProducts];
 
       if (params.search) {
         const q = params.search.toLowerCase();
         list = list.filter(
-          (e) =>
-            e.fullName.toLowerCase().includes(q) ||
-            e.email.toLowerCase().includes(q) ||
-            e.code.toLowerCase().includes(q) ||
-            e.position.toLowerCase().includes(q)
+          (p) =>
+            p.name.toLowerCase().includes(q) ||
+            p.sku.toLowerCase().includes(q) ||
+            p.brand.toLowerCase().includes(q) ||
+            (p.declarationNo ?? '').toLowerCase().includes(q)
         );
       }
-      if (params.departmentId && params.departmentId !== 'all') {
-        list = list.filter((e) => e.departmentId === params.departmentId);
+      if (params.category && params.category !== 'all') {
+        list = list.filter((p) => p.category === params.category);
+      }
+      if (params.warehouse && params.warehouse !== 'all') {
+        list = list.filter((p) => p.warehouse === params.warehouse);
       }
       if (params.status && params.status !== 'all') {
-        list = list.filter((e) => e.status === params.status);
+        list = list.filter((p) => p.status === params.status);
       }
-
-      const mockResponse: AxiosResponse = {
-        data: {
-          success: true,
-          data: list,
-          total: list.length,
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config,
-      };
-      return Promise.reject({ __isMockResponse: true, response: mockResponse });
+      return mockOk(list, 200, { total: list.length });
     }
 
-    if (url.includes('/employees') && method === 'post') {
+    if (url.includes('/products') && method === 'post') {
       await delay(400);
-      const body: Partial<Employee> = JSON.parse(config.data || '{}');
-      const dept = mockDepartments.find((d) => d.id === body.departmentId);
-      const newEmp: Employee = {
-        id: `emp-${Date.now()}`,
-        code: `EMP-${String(mockEmployees.length + 1).padStart(3, '0')}`,
-        fullName: body.fullName || 'Nhân viên mới',
-        email: body.email || 'nv@hrm.vn',
-        phone: body.phone || '0900000000',
-        departmentId: body.departmentId || 'dept-1',
-        departmentName: dept ? dept.name : 'Phòng CNTT',
-        position: body.position || 'Nhân viên',
-        status: body.status || 'probation',
-        salary: Number(body.salary) || 15000000,
-        joinDate: body.joinDate || new Date().toISOString().split('T')[0],
-        avatar: body.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-        address: body.address || 'Hà Nội',
+      const body: Partial<Product> = JSON.parse(config.data || '{}');
+      const newProduct: Product = {
+        id: `prd-${Date.now()}`,
+        sku: body.sku || `SKU-${String(mockProducts.length + 1).padStart(4, '0')}`,
+        name: body.name || 'Hàng hóa mới',
+        brand: body.brand || '',
+        category: body.category || 'liquor',
+        warehouse: body.warehouse || 'SGN',
+        quantity: Number(body.quantity) || 0,
+        unit: body.unit || 'Chai',
+        unitPrice: Number(body.unitPrice) || 0,
+        status: body.status || 'in_stock',
+        importDate: body.importDate || new Date().toISOString().split('T')[0],
+        declarationNo: body.declarationNo,
+        note: body.note,
       };
-      mockEmployees.unshift(newEmp);
-
-      const mockResponse: AxiosResponse = {
-        data: {
-          success: true,
-          data: newEmp,
-          message: 'Tạo nhân viên mới thành công',
-        },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config,
-      };
-      return Promise.reject({ __isMockResponse: true, response: mockResponse });
+      mockProducts.unshift(newProduct);
+      return mockOk(newProduct, 201, { message: 'Thêm hàng hóa thành công' });
     }
 
-    if (url.includes('/employees/') && method === 'put') {
+    if (url.includes('/products/') && method === 'put') {
       await delay(300);
       const id = url.split('/').pop();
-      const body: Partial<Employee> = JSON.parse(config.data || '{}');
-      const index = mockEmployees.findIndex((e) => e.id === id);
+      const body: Partial<Product> = JSON.parse(config.data || '{}');
+      const index = mockProducts.findIndex((p) => p.id === id);
       if (index !== -1) {
-        const dept = mockDepartments.find((d) => d.id === body.departmentId);
-        mockEmployees[index] = {
-          ...mockEmployees[index],
-          ...body,
-          departmentName: dept ? dept.name : mockEmployees[index].departmentName,
-        };
-        const mockResponse: AxiosResponse = {
-          data: {
-            success: true,
-            data: mockEmployees[index],
-            message: 'Cập nhật nhân viên thành công',
-          },
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-          config,
-        };
-        return Promise.reject({ __isMockResponse: true, response: mockResponse });
+        mockProducts[index] = { ...mockProducts[index], ...body };
+        return mockOk(mockProducts[index], 200, { message: 'Cập nhật hàng hóa thành công' });
       }
     }
 
-    if (url.includes('/employees/') && method === 'delete') {
+    if (url.includes('/products/') && method === 'delete') {
       await delay(300);
       const id = url.split('/').pop();
-      const initialLen = mockEmployees.length;
-      const filtered = mockEmployees.filter((e) => e.id !== id);
-      mockEmployees.length = 0;
-      mockEmployees.push(...filtered);
-
-      const mockResponse: AxiosResponse = {
-        data: {
-          success: filtered.length < initialLen,
-          message: 'Xóa nhân viên thành công',
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config,
-      };
-      return Promise.reject({ __isMockResponse: true, response: mockResponse });
+      const index = mockProducts.findIndex((p) => p.id === id);
+      if (index !== -1) mockProducts.splice(index, 1);
+      return mockOk({ success: index !== -1 }, 200, { message: 'Xóa hàng hóa thành công' });
     }
 
     return config;

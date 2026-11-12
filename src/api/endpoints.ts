@@ -1,12 +1,5 @@
 import { apiClient } from './client';
-import type {
-  ApiResponse,
-  Department,
-  Employee,
-  EmployeeFilterParams,
-  DashboardStats,
-  User,
-} from '@/types';
+import type { ApiResponse, Product, ProductFilterParams, User } from '@/types';
 
 // Auth API
 export const authApi = {
@@ -23,46 +16,26 @@ export const authApi = {
   },
 };
 
-// Employees API
-export const employeeApi = {
-  getAll: async (params?: EmployeeFilterParams) => {
-    const res = await apiClient.get<ApiResponse<Employee[]>>('/employees', {
-      params,
-    });
+// Products (duty-free goods) API
+export const productApi = {
+  getAll: async (params?: ProductFilterParams) => {
+    const res = await apiClient.get<ApiResponse<Product[]>>('/products', { params });
     return res.data;
   },
   getById: async (id: string) => {
-    const res = await apiClient.get<ApiResponse<Employee>>(`/employees/${id}`);
+    const res = await apiClient.get<ApiResponse<Product>>(`/products/${id}`);
     return res.data;
   },
-  create: async (data: Partial<Employee>) => {
-    const res = await apiClient.post<ApiResponse<Employee>>('/employees', data);
+  create: async (data: Partial<Product>) => {
+    const res = await apiClient.post<ApiResponse<Product>>('/products', data);
     return res.data;
   },
-  update: async (id: string, data: Partial<Employee>) => {
-    const res = await apiClient.put<ApiResponse<Employee>>(`/employees/${id}`, data);
+  update: async (id: string, data: Partial<Product>) => {
+    const res = await apiClient.put<ApiResponse<Product>>(`/products/${id}`, data);
     return res.data;
   },
   delete: async (id: string) => {
-    const res = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-      `/employees/${id}`
-    );
-    return res.data;
-  },
-};
-
-// Departments API
-export const departmentApi = {
-  getAll: async () => {
-    const res = await apiClient.get<ApiResponse<Department[]>>('/departments');
-    return res.data;
-  },
-};
-
-// Dashboard Stats API
-export const dashboardApi = {
-  getStats: async () => {
-    const res = await apiClient.get<ApiResponse<DashboardStats>>('/dashboard/stats');
+    const res = await apiClient.delete<ApiResponse<{ success: boolean }>>(`/products/${id}`);
     return res.data;
   },
 };

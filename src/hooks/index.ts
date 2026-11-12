@@ -1,3 +1,3 @@
 export * from './useCrudModal';
-export * from './useHrmQuery';
+export * from './useProductQuery';
 export * from './useResponsive';

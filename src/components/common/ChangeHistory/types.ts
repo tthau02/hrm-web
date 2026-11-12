@@ -36,7 +36,7 @@ export interface ChangeHistoryItem {
   userName?: string;
   /** Avatar người thực hiện */
   userAvatar?: string;
-  /** Mã nhân viên / email */
+  /** Mã người dùng / email */
   userCode?: string;
   /** Nguồn thay đổi (ví dụ: 'Web Portal', 'Mobile App', 'Hệ thống tự động') */
   sourceName?: string;

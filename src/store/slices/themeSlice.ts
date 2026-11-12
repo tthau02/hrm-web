@@ -9,7 +9,7 @@ interface ThemeState {
 
 const getInitialDarkMode = (): boolean => {
   try {
-    return localStorage.getItem('hrm_dark_mode') === 'true';
+    return localStorage.getItem('sasco_dark_mode') === 'true';
   } catch {
     return false;
   }
@@ -18,7 +18,7 @@ const getInitialDarkMode = (): boolean => {
 const initialState: ThemeState = {
   isDarkMode: getInitialDarkMode(),
   collapsedSidebar: false,
-  primaryColor: '#f54e00', // Cursor Orange from DESIGN.md
+  primaryColor: '#0064e0', // SASCO Blue from DESIGN.md
 };
 
 export const themeSlice = createSlice({

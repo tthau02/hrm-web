@@ -23,6 +23,18 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Stop layout shift when Drawer/Modal lock page scroll.
+   Ant Design hides the scrollbar and shrinks body by an estimated scrollbar width;
+   with our custom 6px scrollbar that estimate is wrong and the header jiggles.
+   Reserve the gutter permanently and neutralise the width compensation. */
+html {
+  scrollbar-gutter: stable;
+}
+
+html body {
+  width: 100% !important;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

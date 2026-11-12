@@ -1,3 +1,20 @@
+> ## SASCO palette override (authoritative)
+>
+> The project is now **SASCO Duty-Free WMS (POC)**. The structural rules below (hairline-only depth, no drop shadows, compact 40px controls, Inter + JetBrains Mono) still apply, but **every colour in this file that mentions Cursor Orange / warm cream is replaced** by the Cobalt + cool-grey palette below. Source of truth in code: `src/theme/tokens.ts`.
+>
+> | Role | Light | Dark |
+> | --- | --- | --- |
+> | Primary (Cobalt) | `#0064e0` (hover `#0457cb`, active `#0346a3`) | `#4599ff` |
+> | Selected / info tint | `#0091ff` @ 12-15% | `#4599ff` @ 16% |
+> | Accent (Duty-free Gold) | `#ccad6a` (logo mark only) | `#ccad6a` |
+> | Canvas (Soft Cloud) | `#e6ebf1` | `#0a1317` |
+> | Card / panel / sidebar | `#ffffff` | `#141c21` |
+> | Hairline (soft / default / strong) | `#e9edf1` / `#dee3e9` / `#ced0d4` | `#2a353d` |
+> | Ink / Body / Muted | `#0a1317` / `#444950` / `#5d6c7b` | `#eef2f5` / `#a9b4be` / `#8595a4` |
+> | Success / Warning / Danger | `#1f8a65` / `#b7791f` / `#cf2d56` | same |
+>
+> The sidebar is a white (dark: card) surface with a Cobalt-tinted selected item — no saturated blocks of colour. Cobalt is the single action colour.
+
 ## Overview
 
 Cursor's marketing site reads as a quietly-confident developer brand that believes in editorial calm over IDE-darkness. The base canvas is **warm cream** (`{colors.canvas}` — #f7f7f4) holding warm near-black ink (`{colors.ink}` — #26251e) for body and display alike. The single brand voltage is **Cursor Orange** (`{colors.primary}` — #f54e00) reserved for primary CTAs and the wordmark — used scarcely.

@@ -7,7 +7,7 @@ interface LocaleState {
 }
 
 const getInitialLocale = (): SupportedLocale => {
-  const saved = localStorage.getItem('hrm_locale');
+  const saved = localStorage.getItem('sasco_locale');
   if (saved === 'vi' || saved === 'en') return saved;
   return 'vi';
 };
@@ -22,12 +22,12 @@ export const localeSlice = createSlice({
   reducers: {
     setLocale: (state, action: PayloadAction<SupportedLocale>) => {
       state.currentLocale = action.payload;
-      localStorage.setItem('hrm_locale', action.payload);
+      localStorage.setItem('sasco_locale', action.payload);
     },
     toggleLocale: (state) => {
       const next = state.currentLocale === 'vi' ? 'en' : 'vi';
       state.currentLocale = next;
-      localStorage.setItem('hrm_locale', next);
+      localStorage.setItem('sasco_locale', next);
     },
   },
 });

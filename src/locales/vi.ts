@@ -1,5 +1,5 @@
 /**
- * Từ điển bản địa hóa tiếng Việt (vi) cho HRM Web - Bản chuẩn UTF-8
+ * Từ điển bản địa hóa tiếng Việt (vi) cho SASCO Duty-Free WMS - Bản chuẩn UTF-8
  */
 export const vi = {
   common: {
@@ -54,10 +54,8 @@ export const vi = {
     closeMenu: 'Thu gọn hoặc mở rộng menu',
   },
   navigation: {
-    dashboard: 'Tổng quan',
-    employeesGroup: 'Nhân sự',
-    employees: 'Danh sách nhân viên',
-    departments: 'Phòng ban & Cơ cấu',
+    warehouseGroup: 'Quản lý kho',
+    products: 'Hàng hóa miễn thuế',
   },
   errors: {
     title: 'Ứng dụng gặp sự cố',
@@ -67,7 +65,7 @@ export const vi = {
     reload: 'Tải lại trang',
     forbiddenTitle: 'Từ chối truy cập',
     forbiddenDescription: 'Tài khoản của bạn không có quyền xem trang này.',
-    backToDashboard: 'Về trang tổng quan',
+    backToDashboard: 'Về trang chủ',
   },
   table: {
     action: 'Thao tác',
@@ -135,15 +133,14 @@ export const vi = {
     by: 'bởi',
   },
   status: {
-    active: 'Chính thức',
-    probation: 'Thử việc',
-    on_leave: 'Nghỉ phép',
-    resigned: 'Đã nghỉ việc',
-    on_time: 'Đúng giờ',
-    late: 'Đi muộn',
-    early_leave: 'Về sớm',
-    absent: 'Vắng mặt',
-    leave_approved: 'Nghỉ có phép',
+    in_stock: 'Còn hàng',
+    low_stock: 'Sắp hết',
+    out_of_stock: 'Hết hàng',
+    on_hold: 'Tạm giữ',
+    success: 'Thành công',
+    warning: 'Cảnh báo',
+    info: 'Thông tin',
+    error: 'Lỗi',
   },
 };
 

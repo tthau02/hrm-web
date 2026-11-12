@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HRM Web - Responsive Stylesheet (DESIGN.md Compliant)
+   SASCO WMS - Responsive Stylesheet (DESIGN.md Compliant)
    Breakpoints:
    - Mobile: < 640px / < 768px
    - Tablet: 768px - 1023.98px
@@ -12,13 +12,13 @@
    -------------------------------------------------------------------------- */
 @media (max-width: 767.98px) {
   /* Hide Desktop Fixed Sidebar on mobile (Mobile uses Drawer nav) */
-  .hrm-sidebar {
+  .wms-sidebar {
     display: none !important;
   }
 
   /* Header adjustments for small screens */
-  .hrm-header {
-    height: 56px !important;
+  .wms-header {
+    height: 64px !important;
     padding: 0 12px !important;
   }
 
@@ -27,7 +27,7 @@
     gap: 4px !important;
   }
 
-  .hrm-header-actions {
+  .wms-header-actions {
     gap: 6px !important;
   }
 
@@ -42,9 +42,9 @@
   }
 
   /* Content area: optimize screen estate on mobile */
-  .hrm-content-container {
+  .wms-content-container {
     padding: 12px 10px 24px !important;
-    min-height: calc(100vh - 56px) !important;
+    min-height: calc(100vh - 64px) !important;
   }
 
   /* Page Header stacking & full width actions */
@@ -188,7 +188,7 @@
    Tablet Viewports (768px to 1023.98px)
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) and (max-width: 1023.98px) {
-  .hrm-content-container {
+  .wms-content-container {
     padding: 16px 18px 28px !important;
   }
 

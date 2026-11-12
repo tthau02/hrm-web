@@ -50,7 +50,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   data: propData,
   initialValues: propInitialValues,
   saving = false,
-  width = 720,
+  width = 960,
   placement = 'right',
   className = '',
   style,
@@ -64,7 +64,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
   // Dynamically calculate responsive drawer width (100% on mobile, max 95vw on tablet/desktop)
   const responsiveWidth = useMemo(() => {
     if (isMobile) return '100%';
-    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 720), 10);
+    const numericWidth = typeof width === 'number' ? width : parseInt(String(width || 960), 10);
     return Math.min(numericWidth, Math.round(screenWidth * 0.95));
   }, [isMobile, width, screenWidth]);
 
@@ -268,7 +268,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
             parser={(value) => (value?.replace(/\./g, '') || '') as any}
             suffix={
               field.numberConfig?.addonAfter ? undefined : (
-                <span style={{ color: '#807d72', fontSize: 13, fontWeight: 500, paddingRight: 2 }}>
+                <span style={{ color: '#5d6c7b', fontSize: 13, fontWeight: 500, paddingRight: 2 }}>
                   ₫
                 </span>
               )
@@ -540,7 +540,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
         onClick={onClose}
         disabled={saving}
         icon={config.cancelIcon ?? <CloseOutlined style={{ fontSize: 13 }} />}
-        style={{ minWidth: 110, height: 40, borderRadius: 8 }}
+        style={{ minWidth: 110, height: 'var(--height-control)' }}
       >
         {config.cancelText || t.form.cancel}
       </Button>
@@ -559,8 +559,8 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
         }
         loading={saving}
         onClick={handleFormSubmit}
-        className="btn-cursor-primary"
-        style={{ minWidth: 130, height: 40 }}
+        className="btn-brand-primary"
+        style={{ minWidth: 130, height: 'var(--height-control)' }}
       >
         {isEdit ? (config.editSubmitText || t.form.submitEdit) : (config.submitText || t.form.submitCreate)}
       </Button>
@@ -576,7 +576,7 @@ export const DynamicFormSidebar: React.FC<DynamicFormSidebarProps> = ({
       title={headerNode}
       footer={footerNode}
       destroyOnClose
-      closeIcon={<CloseOutlined style={{ fontSize: 14 }} />}
+      closable={{ placement: 'end', closeIcon: <CloseOutlined style={{ fontSize: 14 }} /> }}
       className={`dynamic-form-sidebar ${className}`.trim()}
       rootStyle={style}
       styles={{

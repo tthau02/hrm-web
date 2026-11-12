@@ -1,18 +1,18 @@
 import React from 'react';
-import type { EmployeeStatus } from '@/types';
-import { EMPLOYEE_STATUS_LABELS } from '@/types';
+import type { ProductStatus } from '@/types';
+import { PRODUCT_STATUS_LABELS } from '@/types';
 import { useTranslation } from '@/locales';
 
 export interface StatusBadgeProps {
-  status: EmployeeStatus | string;
+  status: ProductStatus | string;
   label?: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
 /**
- * Common StatusBadge component for HRM:
- * Automatically assigns appropriate colors for active, probation, on_leave, resigned statuses
+ * Common StatusBadge component for the warehouse module.
+ * Maps a status key to one of four semantic tones (success / warning / info / neutral-error).
  */
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   status,
@@ -22,32 +22,29 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const { t } = useTranslation();
   const localizedStatus = (t.status as Record<string, string>)?.[status as string];
-  const displayLabel = label || localizedStatus || EMPLOYEE_STATUS_LABELS[status as EmployeeStatus] || status;
+  const displayLabel =
+    label || localizedStatus || PRODUCT_STATUS_LABELS[status as ProductStatus] || status;
 
   let statusClass: string;
   switch (status) {
-    case 'active':
-    case 'on_time':
+    case 'in_stock':
     case 'success':
-      statusClass = 'status-active';
+      statusClass = 'status-success';
       break;
-    case 'probation':
-    case 'late':
+    case 'low_stock':
     case 'warning':
-      statusClass = 'status-probation';
+      statusClass = 'status-warning';
       break;
-    case 'on_leave':
-    case 'leave_approved':
+    case 'on_hold':
     case 'info':
-      statusClass = 'status-on-leave';
+      statusClass = 'status-info';
       break;
-    case 'resigned':
-    case 'absent':
+    case 'out_of_stock':
     case 'error':
-      statusClass = 'status-resigned';
+      statusClass = 'status-danger';
       break;
     default:
-      statusClass = 'status-resigned';
+      statusClass = 'status-neutral';
   }
 
   return (

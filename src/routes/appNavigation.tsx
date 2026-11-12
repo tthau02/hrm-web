@@ -1,20 +1,13 @@
 import type { ReactNode } from 'react';
 import type { ItemType } from 'antd/es/menu/interface';
-import {
-  DashboardOutlined,
-  TeamOutlined,
-  ApartmentOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { InboxOutlined, ShopOutlined } from '@ant-design/icons';
 import type { Role } from '@/types';
 import type { TranslationSchema } from '@/locales';
 
 type NavigationLabelKey = keyof TranslationSchema['navigation'];
 
 export const APP_ROUTE_ROLES = {
-  dashboard: ['admin', 'hr_manager', 'employee'],
-  employees: ['admin', 'hr_manager'],
-  departments: ['admin', 'hr_manager', 'employee'],
+  products: ['admin', 'warehouse_manager', 'staff'],
 } satisfies Record<string, Role[]>;
 
 export interface AppNavItem {
@@ -28,36 +21,21 @@ export interface AppNavItem {
 
 export const appNavigations: AppNavItem[] = [
   {
-    key: '/',
-    path: '/',
-    labelKey: 'dashboard',
-    icon: <DashboardOutlined style={{ fontSize: 16 }} />,
-    roles: APP_ROUTE_ROLES.dashboard,
-  },
-  {
-    key: '/employees-group',
-    labelKey: 'employeesGroup',
-    icon: <TeamOutlined style={{ fontSize: 16 }} />,
-    roles: APP_ROUTE_ROLES.employees,
+    key: '/warehouse-group',
+    labelKey: 'warehouseGroup',
+    icon: <ShopOutlined style={{ fontSize: 16 }} />,
+    roles: APP_ROUTE_ROLES.products,
     children: [
       {
-        key: '/employees',
-        path: '/employees',
-        labelKey: 'employees',
-        icon: <UserOutlined style={{ fontSize: 15 }} />,
-        roles: APP_ROUTE_ROLES.employees,
+        key: '/products',
+        path: '/products',
+        labelKey: 'products',
+        icon: <InboxOutlined style={{ fontSize: 15 }} />,
+        roles: APP_ROUTE_ROLES.products,
       },
     ],
   },
-  {
-    key: '/departments',
-    path: '/departments',
-    labelKey: 'departments',
-    icon: <ApartmentOutlined style={{ fontSize: 16 }} />,
-    roles: APP_ROUTE_ROLES.departments,
-  },
 ];
-
 
 export const filterNavItemsByRole = (
   items: AppNavItem[],

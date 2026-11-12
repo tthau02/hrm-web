@@ -1,14 +1,14 @@
 ---
 name: hrm-common-components
 description: >-
-  Expert guide for creating pages and features in HRM Web using the core common components:
+  Expert guide for creating pages and features in SASCO WMS using the core common components:
   CommonTable, FilterBar, DynamicViewSidebar, DynamicFormSidebar, PageHeader, and StatCard.
   Activate when implementing list pages, detail sidebars, creation/edit forms, or table features.
 ---
 
-# HRM Common Components Skill
+# Common Components Skill
 
-This skill guides AI agents in implementing HRM Web features using the project's standardized, reusable common component suite according to `DESIGN.md`.
+This skill guides AI agents in implementing SASCO WMS features using the project's standardized, reusable common component suite according to `DESIGN.md`.
 
 ---
 
@@ -19,7 +19,7 @@ This skill guides AI agents in implementing HRM Web features using the project's
    - Use `CommonTable`, `FilterBar`, `DynamicViewSidebar`, and `DynamicFormSidebar`.
 2. **Hairline-Only Depth (DESIGN.md)**:
    - Zero blurry drop shadows. Everything uses 1px hairline borders (`#e6e5e0` light / `#2d2d2d` dark).
-   - Primary Accent: Cursor Orange (`#f54e00`).
+   - Primary Accent: SASCO Blue (`#0047af`).
    - Font: Inter for text, JetBrains Mono for numbers, codes, salaries, and dates.
 3. **Responsive Drawers**:
    - Details & Forms are rendered inside 720px slide-out drawers, not tight modal popups.
@@ -121,7 +121,7 @@ export const FeatureListPage: React.FC = () => {
 ### `FilterBar`
 - Field Types: `'search' | 'text' | 'select' | 'date' | 'dateRange'`
 - Select with "All": Options array can include `{ label: 'Tất cả...', value: 'all' }`. FilterBar handles `all` selection smoothly without undefined errors.
-- Always uniform 40px height with crisp hairline outline and Cursor Orange `:focus`.
+- Always uniform 40px height with crisp hairline outline and SASCO Blue `:focus`.
 
 ### `DynamicViewSidebar<T>`
 - Drawer `width: 720`.

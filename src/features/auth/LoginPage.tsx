@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Input, Button, Typography, Space, Alert, Tag } from 'antd';
-import {
-  UserOutlined,
-  LockOutlined,
-  ApartmentOutlined,
-  SafetyCertificateOutlined,
-} from '@ant-design/icons';
+import { Card, Input, Button, Typography, Space, Alert, Tag, theme as antdTheme } from 'antd';
+import { UserOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/store';
 import { setCredentials } from '@/store/slices/authSlice';
 import { authApi } from '@/api/endpoints';
+import { colors } from '@/theme';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -22,6 +18,7 @@ interface LoginFormInputs {
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { token } = antdTheme.useToken();
   const dispatch = useAppDispatch();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,7 +30,7 @@ export const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     defaultValues: {
-      email: 'admin@hrm.vn',
+      email: 'admin@sasco.vn',
       password: 'password123',
     },
   });
@@ -70,21 +67,19 @@ export const LoginPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f8fafc',
-        backgroundImage:
-          'radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%)',
+        backgroundColor: token.colorBgLayout,
         padding: 16,
       }}
     >
       <Card
-        bordered={false}
+        variant="borderless"
         style={{
           width: 440,
+          maxWidth: '100%',
           borderRadius: 16,
-          boxShadow:
-            '0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+          border: `1px solid ${token.colorBorderSecondary}`,
         }}
-        bodyStyle={{ padding: '36px 32px' }}
+        styles={{ body: { padding: '36px 32px' } }}
       >
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div
@@ -92,67 +87,52 @@ export const LoginPage: React.FC = () => {
               width: 52,
               height: 52,
               borderRadius: 14,
-              backgroundColor: '#eff6ff',
-              color: '#2563eb',
+              backgroundColor: colors.brand.gold,
+              color: colors.text.inkLight,
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 26,
+              fontWeight: 800,
               marginBottom: 12,
             }}
           >
-            <ApartmentOutlined />
+            S
           </div>
-          <Title level={3} style={{ margin: 0, fontWeight: 800 }}>
-            HRM Enterprise
+          <Title level={3} style={{ margin: 0, fontWeight: 800, color: token.colorTextHeading }}>
+            SASCO WMS
           </Title>
           <Paragraph type="secondary" style={{ marginTop: 6, fontSize: 13 }}>
-            Hệ thống Quản lý Nhân sự & Tiền lương Doanh nghiệp
+            Hệ thống quản lý kho hàng miễn thuế
           </Paragraph>
         </div>
 
-        {errorMsg && (
-          <Alert
-            message={errorMsg}
-            type="error"
-            showIcon
-            style={{ marginBottom: 20 }}
-          />
-        )}
+        {errorMsg && <Alert message={errorMsg} type="error" showIcon style={{ marginBottom: 20 }} />}
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div style={{ marginBottom: 18 }}>
-            <div style={{ marginBottom: 6 }}>
-              <Text strong style={{ fontSize: 13 }}>
-                Email công vụ
-              </Text>
-            </div>
+          <div className="wms-field">
+            <label className="wms-field-label" htmlFor="login-email">Email</label>
             <Controller
               name="email"
               control={control}
-              rules={{ required: 'Vui lòng nhập email công vụ' }}
+              rules={{ required: 'Vui lòng nhập email' }}
               render={({ field }) => (
                 <Input
                   {...field}
-                  prefix={<UserOutlined style={{ color: '#94a3b8' }} />}
+                  id="login-email"
+                  prefix={<UserOutlined style={{ color: '#5d6c7b' }} />}
                   size="large"
-                  placeholder="name@hrm.vn"
+                  placeholder="name@sasco.vn"
                 />
               )}
             />
             {errors.email && (
-              <Text type="danger" style={{ fontSize: 12 }}>
-                {errors.email.message}
-              </Text>
+              <Text type="danger" style={{ fontSize: 12 }}>{errors.email.message}</Text>
             )}
           </div>
 
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ marginBottom: 6 }}>
-              <Text strong style={{ fontSize: 13 }}>
-                Mật khẩu
-              </Text>
-            </div>
+          <div className="wms-field" style={{ marginBottom: 28 }}>
+            <label className="wms-field-label" htmlFor="login-password">Mật khẩu</label>
             <Controller
               name="password"
               control={control}
@@ -160,16 +140,15 @@ export const LoginPage: React.FC = () => {
               render={({ field }) => (
                 <Input.Password
                   {...field}
-                  prefix={<LockOutlined style={{ color: '#94a3b8' }} />}
+                  id="login-password"
+                  prefix={<LockOutlined style={{ color: '#5d6c7b' }} />}
                   size="large"
                   placeholder="••••••••"
                 />
               )}
             />
             {errors.password && (
-              <Text type="danger" style={{ fontSize: 12 }}>
-                {errors.password.message}
-              </Text>
+              <Text type="danger" style={{ fontSize: 12 }}>{errors.password.message}</Text>
             )}
           </div>
 
@@ -189,28 +168,28 @@ export const LoginPage: React.FC = () => {
           style={{
             marginTop: 28,
             paddingTop: 16,
-            borderTop: '1px solid #f1f5f9',
+            borderTop: `1px solid ${token.colorBorderSecondary}`,
             textAlign: 'center',
           }}
         >
           <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
             <SafetyCertificateOutlined style={{ marginRight: 4 }} />
-            Tài khoản Demo trải nghiệm nhanh:
+            Tài khoản demo:
           </Text>
-          <Space>
+          <Space wrap>
             <Tag
               color="blue"
               style={{ cursor: 'pointer', padding: '4px 8px' }}
-              onClick={() => handleQuickFill('admin@hrm.vn')}
+              onClick={() => handleQuickFill('admin@sasco.vn')}
             >
-              Admin: admin@hrm.vn
+              Admin: admin@sasco.vn
             </Tag>
             <Tag
-              color="green"
+              color="gold"
               style={{ cursor: 'pointer', padding: '4px 8px' }}
-              onClick={() => handleQuickFill('hr@hrm.vn')}
+              onClick={() => handleQuickFill('warehouse@sasco.vn')}
             >
-              HR Manager: hr@hrm.vn
+              Quản lý kho: warehouse@sasco.vn
             </Tag>
           </Space>
         </div>

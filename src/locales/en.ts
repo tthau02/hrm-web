@@ -1,7 +1,7 @@
 import type { TranslationSchema } from './vi';
 
 /**
- * English localization dictionary (en) for HRM Web
+ * English localization dictionary (en) for SASCO Duty-Free WMS
  */
 export const en: TranslationSchema = {
   common: {
@@ -56,10 +56,8 @@ export const en: TranslationSchema = {
     closeMenu: 'Collapse or expand menu',
   },
   navigation: {
-    dashboard: 'Dashboard',
-    employeesGroup: 'People',
-    employees: 'Employees',
-    departments: 'Departments & Structure',
+    warehouseGroup: 'Warehouse',
+    products: 'Duty-free goods',
   },
   errors: {
     title: 'The app ran into an error',
@@ -69,7 +67,7 @@ export const en: TranslationSchema = {
     reload: 'Reload page',
     forbiddenTitle: 'Access denied',
     forbiddenDescription: 'Your account does not have access to this page.',
-    backToDashboard: 'Go to dashboard',
+    backToDashboard: 'Back to home',
   },
   table: {
     action: 'Actions',
@@ -137,14 +135,13 @@ export const en: TranslationSchema = {
     by: 'by',
   },
   status: {
-    active: 'Official',
-    probation: 'Probation',
-    on_leave: 'On leave',
-    resigned: 'Resigned',
-    on_time: 'On time',
-    late: 'Late',
-    early_leave: 'Early leave',
-    absent: 'Absent',
-    leave_approved: 'Leave approved',
+    in_stock: 'In stock',
+    low_stock: 'Low stock',
+    out_of_stock: 'Out of stock',
+    on_hold: 'On hold',
+    success: 'Success',
+    warning: 'Warning',
+    info: 'Info',
+    error: 'Error',
   },
 };
